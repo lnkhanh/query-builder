@@ -1,0 +1,50 @@
+:host {
+	display: block;
+	position: relative;
+	border-left: 1px solid #cccccc;
+	margin-left: 22px;
+}
+
+#funnelContainer{
+  padding: 10px;
+}
+::ng-deep .tooltip{
+  z-index: 10;
+  visibility: hidden;
+  background: rgba(118, 118, 118, 0.8);
+  border-radius: 5px;
+  bottom: 26px;
+  color: #fff;
+  position: absolute;
+  z-index: 98;
+  width: 200px;
+	height: 30px;
+  white-space: normal;
+  text-align: center;
+  border: 1px solid rgb(180, 180, 180);
+
+	&:after, &:before {
+		top: 100%;
+		left: 50%;
+		border: solid transparent;
+		content: " ";
+		height: 0;
+		width: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+	
+	&:after {
+		border-color: rgba(255, 105, 180, 0);
+		border-top-color: rgb(180, 180, 180);
+		border-width: 5px;
+		margin-left: -5px;
+	}
+	&:before {
+		border-color: rgba(255, 20, 147, 0);
+		border-top-color: rgb(180, 180, 180);
+		border-width: 7px;
+		margin-left: -7px;
+	}
+}
+

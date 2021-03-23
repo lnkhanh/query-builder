@@ -1,0 +1,93 @@
+.els-query-builder-container {
+  height: 100%;
+  background: #f2f2f2;
+  position: relative;
+
+  kt-portlet {
+    height: 100%;
+    display: block;
+
+    query-builder {
+      background: #f2f2f2;
+      padding: 20px;
+    }
+  }
+
+  .header-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #f2f2f2;
+
+    .header-wrapper {
+      width: 992px;
+      margin: auto;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #cccccc;
+      background-color: #fff;
+      display: flex;
+      margin-top: 20px;
+      margin-bottom: -10px;
+      box-shadow: 0 0px 0px 0 rgb(0 0 0 / 20%), 0 3px 4px 0 rgb(0 0 0 / 14%), 0 3px 3px -2px rgb(0 0 0 / 12%);
+
+      textarea {
+        margin-top: 10px;
+        border-radius: 6px;
+        resize: none;
+        width: 100%;
+        padding: 8px 5px;
+      }
+
+      >div:first-child {
+        flex: 0 0 40%;
+        padding: 10px 0;
+      }
+
+      >div:last-child {
+        flex: 0 0 60%;
+      }
+    }
+  }
+
+  .query-operator {
+    width: 140px;
+    margin-left: 10px;
+  }
+
+  .query-input {
+    width: 90px;
+    margin-left: 10px;
+  }
+
+  .query-input-range-of-day {
+    width: 180px;
+  }
+
+  .query-input-date {
+    width: 180px;
+  }
+
+  .query-input-string {
+    width: 180px;
+  }
+
+  .query-input-multiselect {
+    width: 300px;
+  }
+
+  .remove-ruleset-btn {
+    position: absolute;
+    right: -10px;
+    border: 1px solid #cccccc;
+    outline: none;
+    top: -10px;
+    background-color: #fff;
+    width: 30px;
+    height: 30px;
+    line-height: 1.2;
+    z-index: 1;
+  }
+}

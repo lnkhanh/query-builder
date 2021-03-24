@@ -225,7 +225,7 @@ export const LIST_DETAILS = {
 	"IsDynamic": false,
 	"IsFinalized": 3,
 	"Type": 1,
-	"UiObj": `{"query":{"*":{"*":""}},"condition":"must","shouldHide":true,"rules":[{"condition":"must","isRoot":true,"counted":12345,"rules":[{"field":"externalcustomerid","operator":"wildcard","value":"*"},{"field":"firstDownloadedApp","operator":"in_range_of_days","value":{"lt":"30"}}]}],"ruleSetMapping":[{"index":0,"selectedLeft":false,"selectedRight":false,"condition":"must"}]}`,
+	"UiObj": `{"query":{"*":{"*":""}},"condition":"must","shouldHide":true,"rules":[{"condition":"must","name": "Sample rule set", "isRoot":true,"counted":12345,"rules":[{"field":"externalcustomerid","operator":"wildcard","value":"*"},{"field":"firstDownloadedApp","operator":"in_range_of_days","value":{"lt":"30"}}]}],"ruleSetMapping":[{"index":0,"selectedLeft":false,"selectedRight":false,"condition":"must"}]}`,
 	"EsQuery": "{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"wildcard\":{\"externalcu" +
 		"stomerid\":\"*\"}},{\"range\":{\"firstDownloadedApp\":{\"gte\":\"now-30d/d\"}}}]" +
 		"}}]}}}",

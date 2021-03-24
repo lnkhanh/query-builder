@@ -2,10 +2,35 @@
   display: block;
   width: 992px;
   margin: auto;
+  font-family: "Open Sans",sans-serif;
+
+  &.q-collapsed .ruleset-header {
+    opacity: .6;
+  }
 
   .ruleset-header {
-    padding: 5px 4px;
+    padding: 5px 4px 0 50px;
     position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .ruleset-header-title {
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      z-index: 4;
+      left: 0;
+      background-color: #fff;
+      font-size: 19px;
+      font-weight: 600;
+      padding-top: 4px;
+      cursor: pointer;
+      position: absolute;
+    }
   }
 
   .q-icon {
@@ -20,11 +45,14 @@
   }
 
   .q-arrow-icon-button {
-    float: left;
     margin: 4px 6px 4px 0;
     transform: rotate(90deg);
-    transition: linear 0.25s transform;
+    transition: linear 0.1s transform;
     cursor: pointer;
+    position: absolute;
+    left: 10px;
+    z-index: 3;
+    top: 5px;
 
     &.q-collapsed {
       transform: rotate(0);
@@ -169,10 +197,11 @@
 
   .q-tree-container {
     width: 100%;
-    transition: ease-in 0.25s max-height;
+    transition: ease-in 0.1s max-height;
 
     &.q-collapsed {
       max-height: 0 !important;
+      overflow: hidden;
     }
 
     .condition-strike-line {
@@ -215,6 +244,11 @@
           background-color: #3f51b5;
           border-color: #3f51b5;
           color: #fff;
+        }
+
+        &.disabled {
+          background-color: transparent;
+          cursor: default;
         }
       }
     }
@@ -309,14 +343,14 @@
 
     .select-root-condition {
       position: absolute;
-      top: 13px;
+      top: calc(50% - 20px);
       bottom: 0;
       width: 80px;
     }
 
     .arrow-body, .arrow-body-head {
       background-color: rgb(153, 153, 153);
-      height: 16px;
+      height: 27px;
       left: 50%;
       margin-left: -1px;
       position: relative;
@@ -337,10 +371,13 @@
 
     .counted, .add-btn {
       text-align: center;
-      height: 25px;
-      margin-top: -2px;
     }
     .add-btn {
+      margin-top: -2px;
+    } 
+    .add-btn {
+      height: 25px;
+
       span {
         box-shadow: rgb(0 0 0 / 10%) 0px 0px 5px 1px;
         cursor: pointer;

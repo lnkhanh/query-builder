@@ -74,7 +74,10 @@ export const VALIDATOR: any = {
   selector: "query-builder",
   templateUrl: "./query-builder.component.html",
   styleUrls: ["./query-builder.component.scss"],
-  providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR]
+  providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR],
+  host: {
+    '[class]': 'hostClasses'
+  }
 })
 export class QueryBuilderComponent
   implements OnInit, OnChanges, ControlValueAccessor, Validator, OnDestroy {
@@ -127,6 +130,7 @@ export class QueryBuilderComponent
   };
   public defaultBooleanQuery: string[] = queryList.boolQuery;
   public propertyFilterCtrl: FormControl = new FormControl();
+  public hostClasses = '';
 
   @Input() disabled: boolean;
   @Input() data: RuleSet;
@@ -210,11 +214,11 @@ export class QueryBuilderComponent
 
   private unsubscribes: Subscription[] = [];
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
   // ----------OnInit Implementation----------
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   // ----------OnChanges Implementation----------
 
@@ -276,7 +280,7 @@ export class QueryBuilderComponent
   }
   set value(value: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { condition: "must", rules: [], isRoot: true, counted: 0 };
+    this.data = value || { name: '', condition: "must", rules: [], isRoot: true, counted: 0 };
     this.handleDataChange();
   }
 
@@ -340,7 +344,7 @@ export class QueryBuilderComponent
       if (operators.length === 0) {
         console.warn(
           `No operators found for field '${field}' with type ${fieldObject.type}. ` +
-            `Please define an 'operators' property on the field or use the 'operatorMap' binding to fix this.`
+          `Please define an 'operators' property on the field or use the 'operatorMap' binding to fix this.`
         );
       }
       if (fieldObject.nullable) {
@@ -430,7 +434,7 @@ export class QueryBuilderComponent
       } else {
         console.warn(
           `No fields found for entity '${entity.name}'. ` +
-            `A 'defaultOperator' is also not specified on the field config. Operator value will default to null.`
+          `A 'defaultOperator' is also not specified on the field config. Operator value will default to null.`
         );
         return null;
       }
@@ -447,7 +451,7 @@ export class QueryBuilderComponent
       } else {
         console.warn(
           `No operators found for field '${field.value}'. ` +
-            `A 'defaultOperator' is also not specified on the field config. Operator value will default to null.`
+          `A 'defaultOperator' is also not specified on the field config. Operator value will default to null.`
         );
         return null;
       }
@@ -504,22 +508,20 @@ export class QueryBuilderComponent
     if (this.disabled) {
       return;
     }
-    console.log(index);
     let parent = this.data;
 
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = (parent.rules || []).concat([{ index, condition: "must", rules: [], isRoot: true, counted: 0 }]);
-      parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, condition: "must" });
-      console.log('add rules');
+      parent.rules = (parent.rules || []).concat([{ index, name: '', condition: "must", rules: [], isRoot: true, counted: 0 }]);
+      parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, isLeftDisabled: false, isRightDisabled: false, condition: "must" });
     }
 
     this.handleTouched();
     this.handleDataChange();
   }
 
-  removeRuleSet(index: number): void {
+  removeRuleSet(): void {
     if (this.disabled) {
       return;
     }
@@ -546,22 +548,32 @@ export class QueryBuilderComponent
     this.computedTreeContainerHeight();
     setTimeout(() => {
       this.data.collapsed = !this.data.collapsed;
+
+      this.hostClasses = this.data.collapsed ? this.getClassNames('collapsed') : '';
     }, 100);
   }
 
   onChangeRuleSetMappingLeft(index: number) {
+    if (this.data.ruleSetMapping[index].isLeftDisabled === true) {
+      return;
+    }
+
     // Toggle on
     if (this.data.ruleSetMapping[index].selectedLeft === false) {
+      console.log('select');
+
       // Check up
       if (index > 0) {
         for (let i = index - 1; i >= 0; --i) {
           if (this.data.ruleSetMapping[i].selectedRight === true) {
             break;
           }
-  
+
           if (this.data.ruleSetMapping[i].selectedLeft === true) {
             this.data.ruleSetMapping[i].selectedLeft = false;
+            this.data.ruleSetMapping[i].isRightDisabled = false;
             this.data.ruleSetMapping[index].selectedLeft = true;
+            this.data.ruleSetMapping[index].isRightDisabled = true;
             this.handleDataChange();
             return;
           }
@@ -573,61 +585,86 @@ export class QueryBuilderComponent
         for (let i = index + 1; i <= this.data.ruleSetMapping.length - 1; ++i) {
           if (this.data.ruleSetMapping[i].selectedLeft === true) {
             this.data.ruleSetMapping[i].selectedLeft = false;
+            this.data.ruleSetMapping[i].isRightDisabled = false;
+            
             this.data.ruleSetMapping[index].selectedLeft = true;
+            this.data.ruleSetMapping[index].isRightDisabled = true;
+            console.log('im here');
+            
+            if (this.data.ruleSetMapping[i].selectedRight === true) {
+              this.data.ruleSetMapping[i].isLeftDisabled = true;
+            }
+
             this.handleDataChange();
             return;
           }
-  
+
           if (this.data.ruleSetMapping[i].selectedRight === true) {
             break;
           }
         }
       }
     } else { // Toggle off
-      // Check down
-      if (index < this.data.ruleSetMapping.length - 1) {
-        for (let i = index; i <= this.data.ruleSetMapping.length - 1; ++i) {
-          if (this.data.ruleSetMapping[i].selectedRight === true) {
-            this.data.ruleSetMapping[i].selectedRight = false;
-            this.data.ruleSetMapping[index].selectedLeft = false;
-            this.handleDataChange();
-            return;
-          }
+      // Deselect
+      for (let i = index; i <= this.data.ruleSetMapping.length - 1; ++i) {
+        if (this.data.ruleSetMapping[i].selectedRight === true) {
+          this.data.ruleSetMapping[i].selectedRight = false;
+          this.data.ruleSetMapping[i].selectedLeft = false;
+          this.data.ruleSetMapping[i].isRightDisabled = false;
+          this.data.ruleSetMapping[i].isLeftDisabled = false;
+          break;
         }
-      } else {
-        // Select current rule set
-        this.data.ruleSetMapping[index].selectedLeft = false;
-        this.data.ruleSetMapping[index].selectedRight = false;
-        this.handleDataChange();
-        return;
+
+        this.data.ruleSetMapping[i].selectedRight = false;
+        this.data.ruleSetMapping[i].selectedLeft = false;
+        this.data.ruleSetMapping[i].isRightDisabled = false;
+        this.data.ruleSetMapping[i].isLeftDisabled = false;
       }
+
+      this.handleDataChange();
+      return;
     }
 
     this.data.ruleSetMapping[index].selectedLeft = !this.data.ruleSetMapping[index].selectedLeft;
     // Set boundary for next ruleset
     if (this.data.ruleSetMapping[index + 1]) {
-      this.data.ruleSetMapping[index + 1].selectedRight = this.data.ruleSetMapping[index].selectedLeft;
+      this.data.ruleSetMapping[index + 1].selectedRight = true;
+      this.data.ruleSetMapping[index + 1].isLeftDisabled = true;
+      // Is last item
+      this.data.ruleSetMapping[index].isRightDisabled = true;
     } else {
-      this.data.ruleSetMapping[index].selectedRight = this.data.ruleSetMapping[index].selectedLeft;
+      this.data.ruleSetMapping[index].selectedRight = true;
     }
     this.handleDataChange();
   }
 
   onChangeRuleSetMappingRight(index: number) {
+    if (this.data.ruleSetMapping[index].isRightDisabled === true) {
+      return;
+    }
+
     // Toggle on
     if (this.data.ruleSetMapping[index].selectedRight === false) {
       // Check up
       if (index > 0) {
         for (let i = index - 1; i >= 0; --i) {
-          if (this.data.ruleSetMapping[i].selectedLeft === true) {
-            break;
-          }
-  
           if (this.data.ruleSetMapping[i].selectedRight === true) {
+            // Change boundary position from right
             this.data.ruleSetMapping[i].selectedRight = false;
+            this.data.ruleSetMapping[i].isLeftDisabled = false;
+
+            // Up next selected
             this.data.ruleSetMapping[index].selectedRight = true;
+            this.data.ruleSetMapping[index].isLeftDisabled = true;
+
             this.handleDataChange();
             return;
+          } else {
+            this.data.ruleSetMapping[index].isLeftDisabled = true;
+          }
+
+          if (this.data.ruleSetMapping[i].selectedLeft === true) {
+            break;
           }
         }
       }
@@ -641,6 +678,8 @@ export class QueryBuilderComponent
 
           if (this.data.ruleSetMapping[i].selectedRight === true) {
             this.data.ruleSetMapping[i].selectedRight = false;
+            this.data.ruleSetMapping[i].isLeftDisabled = false;
+
             this.data.ruleSetMapping[index].selectedRight = true;
             this.handleDataChange();
             return;
@@ -648,32 +687,34 @@ export class QueryBuilderComponent
         }
       }
     } else { // Toggle off
-      // Check down
-      if (index < this.data.ruleSetMapping.length - 1) {
-        for (let i = index; i <= this.data.ruleSetMapping.length - 1; ++i) {
-          if (this.data.ruleSetMapping[i].selectedLeft === true) {
-            this.data.ruleSetMapping[i].selectedLeft = false;
-            this.data.ruleSetMapping[index].selectedRight = false;
-            this.handleDataChange();
-            return;
-          }
+      // Deselect
+      for (let i = index; i >= 0; --i) {
+        this.data.ruleSetMapping[i].selectedLeft = false;
+        this.data.ruleSetMapping[i].selectedRight = false;
+        this.data.ruleSetMapping[i].isLeftDisabled = false;
+        this.data.ruleSetMapping[i].isRightDisabled = false;
+
+        if (this.data.ruleSetMapping[i].selectedLeft === true) {
+          break;
         }
-      } else {
-        // Select current rule set
-        this.data.ruleSetMapping[index].selectedRight = false;
-        this.data.ruleSetMapping[index].selectedLeft = false;
-        this.handleDataChange();
-        return;
       }
+
+      this.handleDataChange();
+      return;
     }
 
     this.data.ruleSetMapping[index].selectedRight = !this.data.ruleSetMapping[index].selectedRight;
 
+    if (index !== 0 && this.data.ruleSetMapping[index].selectedRight === true) {
+      this.data.ruleSetMapping[index].isLeftDisabled = true;
+    }
+
     // Set boundary for next ruleset
     if (this.data.ruleSetMapping[index - 1]) {
-      this.data.ruleSetMapping[index - 1].selectedLeft = this.data.ruleSetMapping[index].selectedRight;
+      this.data.ruleSetMapping[index - 1].selectedLeft = true;
+      this.data.ruleSetMapping[index - 1].isRightDisabled = true;
     } else {
-      this.data.ruleSetMapping[index].selectedLeft = this.data.ruleSetMapping[index].selectedRight;
+      this.data.ruleSetMapping[index].selectedLeft = true;
     }
 
     this.handleDataChange();
@@ -691,7 +732,7 @@ export class QueryBuilderComponent
     if (this.disabled) {
       return;
     }
-    
+
     this.handleTouched();
     this.handleDataChange();
   }
@@ -716,7 +757,7 @@ export class QueryBuilderComponent
   }
 
   coerceValueForOperator(operator: string, value: any, rule: Rule): any {
-    switch(operator) {
+    switch (operator) {
       case 'range': {
         return {
           gte: '',
@@ -1040,6 +1081,18 @@ export class QueryBuilderComponent
     return conditionName;
   }
 
+  handleDataChange(): void {
+    this.changeDetectorRef.markForCheck();
+    if (this.onChangeCallback) {
+      this.onChangeCallback();
+    }
+    if (this.parentChangeCallback) {
+      this.parentChangeCallback();
+    }
+
+    this.dataOnChange.emit('Updated');
+  }
+
   private checkEmptyRuleInRuleset(ruleset: RuleSet): boolean {
     if (!ruleset || !ruleset.rules || ruleset.rules.length === 0) {
       return true;
@@ -1070,18 +1123,6 @@ export class QueryBuilderComponent
         }
       });
     }
-  }
-
-  private handleDataChange(): void {
-    this.changeDetectorRef.markForCheck();
-    if (this.onChangeCallback) {
-      this.onChangeCallback();
-    }
-    if (this.parentChangeCallback) {
-      this.parentChangeCallback();
-    }
-
-    this.dataOnChange.emit('Updated');
   }
 
   private handleTouched(): void {

@@ -7,11 +7,11 @@ export interface DataConfig {
 
 export interface RuleSet {
   index?: number;
+  name: string;
   condition: string;
   rules: Array<RuleSet | Rule>;
   isRoot: boolean;
   collapsed?: boolean;
-  // minimum_should_match?: string;
   shouldHide?: boolean;
   counted: number;
   ruleSetMapping?: Array<RuleSetMapping>;
@@ -22,6 +22,8 @@ export interface RuleSetMapping {
   selectedLeft: boolean;
   selectedRight: boolean;
   condition: string;
+  isLeftDisabled: boolean;
+  isRightDisabled: boolean;
 }
 
 export interface Rule {

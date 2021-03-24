@@ -20,7 +20,7 @@
     <as-split-area size="100">
       <!-- Header -->
       <div [style.height.px]="200"></div>
-      <query-builder [(ngModel)]='queryConfig' [config]='builderConfig' (dataOnChange)="onQueryChange($event)">
+      <query-builder [(ngModel)]='queryConfig' [config]='builderConfig' (dataOnChange)="onQueryChange($event)" [allowCollapse]="true">
         <ng-container
           *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
           <button type="button" mat-icon-button class="remove-ruleset-btn" color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">

@@ -3,13 +3,6 @@
     <i [ngClass]="getClassNames('arrowIcon')"></i>
   </ng-template>
 
-  <a *ngIf="allowCollapse" (click)="toggleCollapse()"
-    [ngClass]="getClassNames('arrowIconButton', data.collapsed ? 'collapsed' : null)">
-    <ng-container *ngIf="getArrowIconTemplate() as template; else defaultArrowIcon">
-      <ng-container *ngTemplateOutlet="template; context: getArrowIconContext()"></ng-container>
-    </ng-container>
-  </a>
-
   <ng-container *ngIf="getButtonGroupTemplate() as template; else defaultButtonGroup">
     <div [ngClass]="getClassNames('buttonGroup', 'rightAlign')">
       <ng-container *ngTemplateOutlet="template; context: getButtonGroupContext()"></ng-container>
@@ -21,10 +14,10 @@
       <button type="button" (click)="addRule()" [ngClass]="getClassNames('button')" [disabled]=disabled>
         <i [ngClass]="getClassNames('addIcon')"></i> Conditions
       </button>
-      <button type="button" (click)="addRuleSet()" [ngClass]="getClassNames('button')" *ngIf="allowRuleset"
+      <!-- <button type="button" (click)="addRuleSet()" [ngClass]="getClassNames('button')" *ngIf="allowRuleset"
         [disabled]=disabled>
         <i [ngClass]="getClassNames('addIcon')"></i> Sub Query
-      </button>
+      </button> -->
       <ng-container *ngIf="!!parentValue && allowRuleset">
         <button type="button" (click)="removeRuleSet()" [ngClass]="getClassNames('button', 'removeButton')"
           [disabled]=disabled>
@@ -40,20 +33,37 @@
 
   <ng-template #defaultSwitchGroup>
     <div *ngIf="data && data.isRoot" class="ruleset-header">
-      <button type="button" class="add-group-condition-btn" mat-raised-button (click)="addRuleSet()"
-        [disabled]=!data.condition>
-        <i [ngClass]="getClassNames('addIcon')"></i> Add condition group
-      </button>
-      <input class="q-input" placeholder="Please enter ruleset's name" [style.width.px]="300">
-      &nbsp;
-      <span [ngClass]="{ 'display-none': data.shouldHide }">
-        <mat-select class="q-select" [(value)]="data.condition" [style.width.px]="80"
-          (selectionChange)="changeCondition()">
-          <mat-option *ngFor="let condition of defaultBooleanQuery" [value]="condition">
-            <span>{{ getBoolConditionName(condition) }}</span>
-          </mat-option>
-        </mat-select>
-      </span>
+      <a *ngIf="allowCollapse" (click)="toggleCollapse()"
+        [ngClass]="getClassNames('arrowIconButton', data.collapsed ? 'collapsed' : null)">
+        <ng-container *ngIf="getArrowIconTemplate() as template; else defaultArrowIcon">
+          <ng-container *ngTemplateOutlet="template; context: getArrowIconContext()"></ng-container>
+        </ng-container>
+      </a>
+      <div class="ruleset-header-title" *ngIf="data.collapsed" (click)="toggleCollapse()">{{data.name || '[Please enter name]'}}</div>
+      <div class="ruleset-header-container">
+
+        <!-- <button type="button" class="add-group-condition-btn" mat-raised-button (click)="addRuleSet()"
+          [disabled]=!data.condition>
+          <i [ngClass]="getClassNames('addIcon')"></i> Add condition group
+        </button> -->
+        <input [(ngModel)]="data.name" class="q-input" placeholder="Please enter ruleset's name" [style.width.px]="300">
+        &nbsp;
+        <span [ngClass]="{ 'display-none': data.shouldHide }">
+          <mat-select class="q-select" [style.width.px]="150" [value]="0" (selectionChange)="changeCondition()">
+            <mat-option [value]="0">Sample dimension</mat-option>
+            <mat-option [value]="1">Sample dimension 1</mat-option>
+            <mat-option [value]="2">Sample dimension 2</mat-option>
+          </mat-select>
+        </span>&nbsp;
+        <span [ngClass]="{ 'display-none': data.shouldHide }">
+          <mat-select class="q-select" [(value)]="data.condition" [style.width.px]="80"
+            (selectionChange)="changeCondition()">
+            <mat-option *ngFor="let condition of defaultBooleanQuery" [value]="condition">
+              <span>{{ getBoolConditionName(condition) }}</span>
+            </mat-option>
+          </mat-select>
+        </span>
+      </div>
     </div>
   </ng-template>
 </div>
@@ -166,8 +176,7 @@
               {{ getBoolConditionName(data.condition) }}
             </div>
           </ng-container>
-          <query-builder *ngIf="local.ruleset" [data]="rule" [disabled]="disabled"
-            [ruleSetIndex]="i"
+          <query-builder *ngIf="local.ruleset" [data]="rule" [disabled]="disabled" [ruleSetIndex]="i"
             [parentTouchedCallback]="parentTouchedCallback || onTouchedCallback"
             [parentChangeCallback]="parentChangeCallback || onChangeCallback"
             [parentInputTemplates]="parentInputTemplates || inputTemplates"
@@ -197,18 +206,20 @@
 
           <!-- Group rule set buttons -->
           <ng-container *ngIf="rule.isRoot && data.rules.length > 1">
-            <button class="ruleset-mapping-btn left" [ngClass]="{ active: data.ruleSetMapping[i].selectedLeft }"
+            <button class="ruleset-mapping-btn left"
+              [ngClass]="{ active: data.ruleSetMapping[i].selectedLeft, disabled: data.ruleSetMapping[i].isLeftDisabled }"
               (click)="onChangeRuleSetMappingLeft(i)">[</button>
-            <button class="ruleset-mapping-btn right" [ngClass]="{ active: data.ruleSetMapping[i].selectedRight }"
+            <button class="ruleset-mapping-btn right"
+              [ngClass]="{ active: data.ruleSetMapping[i].selectedRight, disabled: data.ruleSetMapping[i].isRightDisabled }"
               (click)="onChangeRuleSetMappingRight(i)">]</button>
           </ng-container>
           <!-- /Group rule set buttons -->
         </li>
         <!-- Footer -->
-        <li *ngIf="rule.isRoot && local.invalid === false">
+        <li *ngIf="data.collapsed != true && rule.isRoot && local.invalid === false">
           <div class="tree-item-footer">
             <div class="arrow-body"></div>
-            <div class="counted" *ngIf="rule.counted">
+            <div class="counted" *ngIf="rule.counted > 0">
               <span>{{rule.counted|number}} customers</span>
             </div>
             <div class="add-btn" *ngIf="(i+1) === data.rules.length">
@@ -218,7 +229,7 @@
             </div>
             <div class="arrow-body-head"></div>
             <div class="arrow">▼</div>
-            <mat-select *ngIf="rule.counted && data.ruleSetMapping[i]" class="q-select select-root-condition"
+            <mat-select *ngIf="data.ruleSetMapping[i]" class="q-select select-root-condition"
               [(value)]="data.ruleSetMapping[i].condition" (selectionChange)="handleDataChange()">
               <mat-option *ngFor="let condition of defaultBooleanQuery" [value]="condition">
                 <span>{{ getBoolConditionName(condition) }}</span>

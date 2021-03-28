@@ -13,7 +13,8 @@ import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   QueryBuilderConfig,
   DataConfig,
-  RuleSetMapping
+  RuleSetMapping,
+  Dimension
 } from "../query-builder/query-builder.interfaces";
 import { boolConditionName } from "../query-builder/query.list";
 
@@ -35,6 +36,7 @@ import { AdminConfig } from 'src/app/admin.config';
 export class ElsQueryBuilderComponent implements OnInit, OnDestroy {
   @Input() data: DataConfig;
   @Input() properties: any;
+  @Input() dimensions: Dimension[];
   @Output() onChangeEvent = new EventEmitter();
 
   public queryCtrl: FormControl;

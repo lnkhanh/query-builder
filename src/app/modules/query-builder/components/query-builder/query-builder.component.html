@@ -39,22 +39,26 @@
           <ng-container *ngTemplateOutlet="template; context: getArrowIconContext()"></ng-container>
         </ng-container>
       </a>
-      <div class="ruleset-header-title" *ngIf="data.collapsed" (click)="toggleCollapse()">{{data.name || '[Please enter name]'}}</div>
+      <span class="ruleset-num">{{ (data.index || 0) + 1 }}</span>
+      <div class="ruleset-header-title" *ngIf="data.collapsed" (click)="toggleCollapse()">
+        {{ getDimension(data.dimensionId) }}
+      </div>
       <div class="ruleset-header-container">
 
         <!-- <button type="button" class="add-group-condition-btn" mat-raised-button (click)="addRuleSet()"
           [disabled]=!data.condition>
           <i [ngClass]="getClassNames('addIcon')"></i> Add condition group
         </button> -->
-        <input [(ngModel)]="data.name" class="q-input" placeholder="Please enter ruleset's name" [style.width.px]="300">
         &nbsp;
-        <span [ngClass]="{ 'display-none': data.shouldHide }">
-          <mat-select class="q-select" [style.width.px]="150" [value]="0" (selectionChange)="changeCondition()">
-            <mat-option [value]="0">Sample dimension</mat-option>
-            <mat-option [value]="1">Sample dimension 1</mat-option>
-            <mat-option [value]="2">Sample dimension 2</mat-option>
-          </mat-select>
-        </span>&nbsp;
+        <ng-container *ngIf="dimensions">
+          <span [ngClass]="{ 'display-none': data.shouldHide }">
+            <mat-select class="q-select" [style.width.px]="150" [(value)]="data.dimensionId"
+              (selectionChange)="changeCondition()">
+              <mat-option *ngFor="let dimension of dimensions" [value]="dimension.Id">{{ dimension.Name }}
+              </mat-option>
+            </mat-select>
+          </span>&nbsp;
+        </ng-container>
         <span [ngClass]="{ 'display-none': data.shouldHide }">
           <mat-select class="q-select" [(value)]="data.condition" [style.width.px]="80"
             (selectionChange)="changeCondition()">
@@ -70,12 +74,12 @@
 
 <div #treeContainer (transitionend)="transitionEnd($event)"
   [ngClass]="getClassNames('treeContainer', data.collapsed ? 'collapsed' : null)">
-  <ul [ngClass]="getClassNames('tree')" *ngIf="data && data.rules">
+  <ul [ngClass]="getClassNames('tree')" *ngIf="data && data.rules" cdkDropList (cdkDropListDropped)="onDropped($event)">
     <ng-container *ngFor="let rule of data.rules;let i=index">
 
       <ng-container
         *ngIf="{ruleset: !!rule.rules, invalid: !config.allowEmptyRulesets && rule.rules && rule.rules.length === 0} as local">
-        <li [ngClass]="getQueryItemClassName(local)">
+        <li [ngClass]="getQueryItemClassName(local)" cdkDrag>
           <ng-container *ngIf="!local.ruleset">
             <ng-container *ngIf="getRemoveButtonTemplate() as template; else defaultRemoveButton">
               <div [ngClass]="getClassNames('buttonGroup', 'rightAlign')">
@@ -188,8 +192,9 @@
             [parentRemoveButtonTemplate]="parentRemoveButtonTemplate || removeButtonTemplate"
             [parentEmptyWarningTemplate]="parentEmptyWarningTemplate || emptyWarningTemplate"
             [parentArrowIconTemplate]="parentArrowIconTemplate || arrowIconTemplate" [parentValue]="data"
-            [classNames]="classNames" [config]="config" [allowRuleset]="allowRuleset" [allowCollapse]="allowCollapse"
-            [emptyMessage]="emptyMessage" [operatorMap]="operatorMap" (dataOnChange)="onQueryChange($event)">
+            [dimensions]="dimensions" [classNames]="classNames" [config]="config" [allowRuleset]="allowRuleset"
+            [allowCollapse]="allowCollapse" [emptyMessage]="emptyMessage" [operatorMap]="operatorMap"
+            (dataOnChange)="onQueryChange($event)">
           </query-builder>
 
           <ng-container *ngIf="getEmptyWarningTemplate() as template; else defaultEmptyWarning">
@@ -212,6 +217,12 @@
             <button class="ruleset-mapping-btn right"
               [ngClass]="{ active: data.ruleSetMapping[i].selectedRight, disabled: data.ruleSetMapping[i].isRightDisabled }"
               (click)="onChangeRuleSetMappingRight(i)">]</button>
+            <button class="move-ruleset-position-btn" cdkDragHandle>
+              <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
+                <path d="M0 0h24v24H0z" fill="none"></path>
+              </svg>
+            </button>
           </ng-container>
           <!-- /Group rule set buttons -->
         </li>
@@ -245,6 +256,10 @@
         (click)="addRule()" [disabled]="!data.condition">
         <i [ngClass]="getClassNames('addIcon')"></i>
       </button>
+
+      <button mat-raised-button
+        [ngStyle]="{ position: 'absolute', right: '15px', bottom: '10px', display: data.collapsed ? 'none' : 'block' }"
+        color="primary">Apply</button>
     </li>
   </ul>
 </div>

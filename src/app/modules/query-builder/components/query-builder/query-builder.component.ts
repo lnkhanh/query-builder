@@ -34,7 +34,8 @@ import {
   Rule,
   RuleSet,
   EmptyWarningContext,
-  RuleSetMapping
+  RuleSetMapping,
+  Dimension
 } from "./query-builder.interfaces";
 import {
   ChangeDetectorRef,
@@ -142,6 +143,7 @@ export class QueryBuilderComponent
   @Input() ruleSetIndex: number;
   @Input() allowRuleset: boolean = true;
   @Input() allowCollapse: boolean = false;
+  @Input() dimensions: Dimension[];
   @Input() emptyMessage: string =
     "A Sub-Query cannot be empty. Please add a condition or remove it all together.";
   @Input() classNames: QueryBuilderClassNames;
@@ -214,11 +216,13 @@ export class QueryBuilderComponent
 
   private unsubscribes: Subscription[] = [];
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef) { 
+  }
 
   // ----------OnInit Implementation----------
 
-  ngOnInit() { }
+  ngOnInit() { 
+  }
 
   // ----------OnChanges Implementation----------
 
@@ -280,7 +284,7 @@ export class QueryBuilderComponent
   }
   set value(value: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { name: '', condition: "must", rules: [], isRoot: true, counted: 0 };
+    this.data = value || { dimensionId: '', condition: "must", rules: [], isRoot: true, counted: 0 };
     this.handleDataChange();
   }
 
@@ -505,7 +509,7 @@ export class QueryBuilderComponent
   }
 
   addRuleSet(index: number): void {
-    if (this.disabled) {
+    if (this.disabled || !this.dimensions.length) {
       return;
     }
     let parent = this.data;
@@ -513,8 +517,12 @@ export class QueryBuilderComponent
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = (parent.rules || []).concat([{ index, name: '', condition: "must", rules: [], isRoot: true, counted: 0 }]);
+      parent.rules = (parent.rules || []).concat([{ index, dimensionId: this.dimensions[0].Id, condition: "must", rules: [], isRoot: true, counted: 0 }]);
       parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, isLeftDisabled: false, isRightDisabled: false, condition: "must" });
+    
+      // Add first set
+      const parentJustAdded = <RuleSet>parent.rules[parent.rules.length - 1];
+      this.addRule(parentJustAdded);
     }
 
     this.handleTouched();
@@ -1069,6 +1077,16 @@ export class QueryBuilderComponent
     return this.inputContextCache.get(rule);
   }
 
+  getDimension(dimensionId: string) {
+    const found = this.dimensions.find((d) => d.Id === dimensionId);
+
+    if (!found) {
+      return '[Please select dimension]';
+    }
+
+    return found.Name;
+  }
+
   onQueryChange($event) {
     this.dataOnChange.emit($event);
   }
@@ -1091,6 +1109,27 @@ export class QueryBuilderComponent
     }
 
     this.dataOnChange.emit('Updated');
+  }
+
+  onDropped($event) {
+    // Skip current changes
+    const { previousIndex, currentIndex } = $event;
+
+    if (previousIndex === currentIndex) {
+      return;
+    }
+
+    this.swap(this.data.rules, previousIndex, currentIndex);
+  }
+
+  private swap(array:any[], x: any, y: any) {
+    var b = array[x];
+    array[x].index = y;
+    array[y].index = x;
+    
+    array[x] = array[y];
+    array[y] = b;
+
   }
 
   private checkEmptyRuleInRuleset(ruleset: RuleSet): boolean {

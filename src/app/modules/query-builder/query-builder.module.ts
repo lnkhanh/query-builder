@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, } from '@angular/forms';
 import { AngularSplitModule } from 'angular-split';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMaskModule } from 'ngx-mask';
 import {
@@ -87,6 +88,7 @@ import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.com
     MatDatepickerModule,
     NgxMatDatetimePickerModule,
     NgxDaterangepickerMd,
+    DragDropModule,
 
     // PartialsModule.forRoot(),
     AngularSplitModule.forChild(),

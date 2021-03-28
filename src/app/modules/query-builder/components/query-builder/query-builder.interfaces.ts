@@ -7,7 +7,7 @@ export interface DataConfig {
 
 export interface RuleSet {
   index?: number;
-  name: string;
+  dimensionId: string;
   condition: string;
   rules: Array<RuleSet | Rule>;
   isRoot: boolean;
@@ -36,6 +36,13 @@ export interface Rule {
 export interface Option {
   name: string;
   value: any;
+}
+
+export interface Dimension {
+  Id: string;
+  Name: string;
+  Value: string;
+  Description?: any;
 }
 
 export interface FieldMap {

@@ -8,7 +8,7 @@
   <div class="header-container">
     <div class="header-wrapper">
       <div>
-        <input class="q-input" name="name" placeholder="Segment name" [style.width]="'100%'"/>
+        <input class="q-input" name="name" placeholder="Segment name" [style.width]="'100%'" />
         <textarea rows="3" disabled>{{ ruleSetMappingStr }}</textarea>
       </div>
       <div>
@@ -20,10 +20,12 @@
     <as-split-area size="100">
       <!-- Header -->
       <div [style.height.px]="200"></div>
-      <query-builder [(ngModel)]='queryConfig' [config]='builderConfig' (dataOnChange)="onQueryChange($event)" [allowCollapse]="true">
+      <query-builder [(ngModel)]='queryConfig' [dimensions]="dimensions" [config]='builderConfig'
+        (dataOnChange)="onQueryChange($event)" [allowCollapse]="true">
         <ng-container
           *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
-          <button type="button" mat-icon-button class="remove-ruleset-btn" color="accent" *ngIf="removeRuleSet" (click)="removeRuleSet()">
+          <button type="button" mat-icon-button class="remove-ruleset-btn" color="accent" *ngIf="removeRuleSet"
+            (click)="removeRuleSet()">
             <mat-icon>clear</mat-icon>
           </button>
         </ng-container>
@@ -50,7 +52,8 @@
           <mat-form-field>
             <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
               <mat-option>
-                <ngx-mat-select-search placeholderLabel="Search..." [formControl]="propertyFilterCtrl"></ngx-mat-select-search>
+                <ngx-mat-select-search placeholderLabel="Search..." [formControl]="propertyFilterCtrl">
+                </ngx-mat-select-search>
               </mat-option>
               <mat-option *ngFor="let field of getFields(rule.entity)" [value]="field.value">
                 {{ field.name }}
@@ -97,7 +100,7 @@
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; let field=field; type: 'numeric'; let onChange=onChange">
-          <mat-form-field class="query-input" >
+          <mat-form-field class="query-input">
             <input matInput [(ngModel)]="rule.value" type="number" (ngModelChange)="onChange()">
           </mat-form-field>
         </ng-container>
@@ -107,35 +110,29 @@
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; let field=field; type: 'textarea'; let onChange=onChange">
-          <mat-form-field >
+          <mat-form-field>
             <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
                               </textarea>
           </mat-form-field>
         </ng-container>
 
         <ng-container *queryInput="let rule; let field=field; type: 'numberRange'; let onChange=onChange">
-          <mat-form-field class="query-input"  *ngIf="checkHasProperty(rule.value, 'gte')">
+          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'gte')">
             <input matInput [(ngModel)]="rule.value.gte" placeholder="From" (ngModelChange)="onChange()" type="text">
           </mat-form-field>
-          <mat-form-field  class="query-input" *ngIf="checkHasProperty(rule.value, 'lte')">
+          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'lte')">
             <input matInput [(ngModel)]="rule.value.lte" placeholder="To" (ngModelChange)="onChange()" type="text">
           </mat-form-field>
-          <mat-form-field  class="query-input" *ngIf="checkHasProperty(rule.value, 'gt')">
+          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'gt')">
             <input matInput [(ngModel)]="rule.value.gt" placeholder="" (ngModelChange)="onChange()" type="text">
           </mat-form-field>
-          <mat-form-field  class="query-input" *ngIf="checkHasProperty(rule.value, 'lt') && !isRangeOfDay">
+          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'lt') && !isRangeOfDay">
             <input matInput [(ngModel)]="rule.value.lt" placeholder="" (ngModelChange)="onChange()" type="text">
           </mat-form-field>
-          <mat-form-field  class="query-input query-input-range-of-day" *ngIf="checkHasProperty(rule.value, 'lt') && isRangeOfDay">
-            <input
-              matInput
-              [mask]="adminConfig.mask.integer"
-              [(ngModel)]="rule.value.lt"
-              placeholder="Number of Days"
-              (ngModelChange)="onChange()"
-              type="text"
-              required
-            >
+          <mat-form-field class="query-input query-input-range-of-day"
+            *ngIf="checkHasProperty(rule.value, 'lt') && isRangeOfDay">
+            <input matInput [mask]="adminConfig.mask.integer" [(ngModel)]="rule.value.lt" placeholder="Number of Days"
+              (ngModelChange)="onChange()" type="text" required>
           </mat-form-field>
         </ng-container>
       </query-builder>

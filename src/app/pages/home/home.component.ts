@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DataConfig } from 'src/app/modules/query-builder/components/query-builder';
-import { LIST_DETAILS, SAMPLE_PROPERTIES } from './mock-data';
+import { DataConfig, Dimension } from 'src/app/modules/query-builder/components/query-builder';
+import { DIMENSIONS, LIST_DETAILS, SAMPLE_PROPERTIES } from './mock-data';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit {
   };
   data = LIST_DETAILS;
   queryBuilderProperties = SAMPLE_PROPERTIES;
+  dimensions: Dimension[] = DIMENSIONS;
   
   constructor() { }
 

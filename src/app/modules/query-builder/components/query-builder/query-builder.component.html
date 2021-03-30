@@ -41,20 +41,15 @@
       </a>
       <span class="ruleset-num">{{ (data.index || 0) + 1 }}</span>
       <div class="ruleset-header-title" *ngIf="data.collapsed" (click)="toggleCollapse()">
-        {{ getDimension(data.dimensionId) }}
+        {{ data.source }}
       </div>
       <div class="ruleset-header-container">
-
-        <!-- <button type="button" class="add-group-condition-btn" mat-raised-button (click)="addRuleSet()"
-          [disabled]=!data.condition>
-          <i [ngClass]="getClassNames('addIcon')"></i> Add condition group
-        </button> -->
         &nbsp;
-        <ng-container *ngIf="dimensions">
+        <ng-container *ngIf="sources">
           <span [ngClass]="{ 'display-none': data.shouldHide }">
-            <mat-select class="q-select" [style.width.px]="150" [(value)]="data.dimensionId"
-              (selectionChange)="changeCondition()">
-              <mat-option *ngFor="let dimension of dimensions" [value]="dimension.Id">{{ dimension.Name }}
+            <mat-select class="q-select" [style.width.px]="150" [(value)]="data.source"
+              (selectionChange)="changeSource()">
+              <mat-option *ngFor="let source of sources" [value]="source">{{ source }}
               </mat-option>
             </mat-select>
           </span>&nbsp;
@@ -80,6 +75,7 @@
       <ng-container
         *ngIf="{ruleset: !!rule.rules, invalid: !config.allowEmptyRulesets && rule.rules && rule.rules.length === 0} as local">
         <li [ngClass]="getQueryItemClassName(local)" cdkDrag>
+          <div class="drag-placeholder" *cdkDragPlaceholder></div>
           <ng-container *ngIf="!local.ruleset">
             <ng-container *ngIf="getRemoveButtonTemplate() as template; else defaultRemoveButton">
               <div [ngClass]="getClassNames('buttonGroup', 'rightAlign')">
@@ -192,7 +188,7 @@
             [parentRemoveButtonTemplate]="parentRemoveButtonTemplate || removeButtonTemplate"
             [parentEmptyWarningTemplate]="parentEmptyWarningTemplate || emptyWarningTemplate"
             [parentArrowIconTemplate]="parentArrowIconTemplate || arrowIconTemplate" [parentValue]="data"
-            [dimensions]="dimensions" [classNames]="classNames" [config]="config" [allowRuleset]="allowRuleset"
+            [sources]="sources" [classNames]="classNames" [config]="config" [allowRuleset]="allowRuleset"
             [allowCollapse]="allowCollapse" [emptyMessage]="emptyMessage" [operatorMap]="operatorMap"
             (dataOnChange)="onQueryChange($event)">
           </query-builder>
@@ -259,7 +255,7 @@
 
       <button mat-raised-button
         [ngStyle]="{ position: 'absolute', right: '15px', bottom: '10px', display: data.collapsed ? 'none' : 'block' }"
-        color="primary">Apply</button>
+        color="primary" (click)="onCountRuleSet()">Apply</button>
     </li>
   </ul>
 </div>

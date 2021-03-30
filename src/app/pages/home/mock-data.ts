@@ -1,222 +1,41 @@
-export const DIMENSIONS = [{ "Id": "4055361d-7d78-447d-b35f-12d25453ab97", "Name": "Sale Transaction", "Value": "bigy_sale_data", "Description": null }, { "Id": "1516354a-7b81-4e9a-b109-9a36a5ed8bc8", "Name": "Customer", "Value": "bigy_customer_data", "Description": null }];
-
-export const SAMPLE_PROPERTIES = {
-	"properties": {
-		"address1": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"address2": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"city": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"companyId": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"createDate": {
-			"type": "date"
-		},
-		"email": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"externalcustomerid": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"firstDownloadedApp": {
-			"type": "date"
-		},
-		"firstname": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"fullname": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"groups": {
-			"type": "long"
-		},
-		"id": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"indexName": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"isApproved": {
-			"type": "boolean"
-		},
-		"isLockedOut": {
-			"type": "boolean"
-		},
-		"lastname": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"middlename": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"mobilenumber": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"objectType": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"phonenumber": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"photoIdUrl": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"roleids": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"state": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"userId": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"username": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"zipCode": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		},
-		"zipcode": {
-			"type": "text",
-			"fields": {
-				"keyword": {
-					"type": "keyword",
-					"ignore_above": 256
-				}
-			}
-		}
+export const SAMPLE_PROPERTIES = [
+	{
+		"FIELD": "DateOfBirth",
+		"ATTRIBUTENAME": "Date of Birth",
+		"TYPE": "Date",
+		"SOURCE": "Customer",
+		"OPERATOR": "<,<=,=,>,>=",
+		"VALUESELECTED": "",
+		"QUERYCLAUSE": ""
+	},
+	{
+		"FIELD": "STATEPROVINCE",
+		"ATTRIBUTENAME": "State/Province",
+		"TYPE": "text",
+		"SOURCE": "Customer",
+		"OPERATOR": "in",
+		"VALUESELECTED": "",
+		"QUERYCLAUSE": "select STATEPROVINCE from customer group by STATEPROVINCE"
+	},
+	{
+		"FIELD": "POSTALCODE",
+		"ATTRIBUTENAME": "Postal Code ",
+		"TYPE": "text",
+		"SOURCE": "Customer",
+		"OPERATOR": "in",
+		"VALUESELECTED": "",
+		"QUERYCLAUSE": "select POSTALCODE from customer group by POSTALCODE"
+	},
+	{
+		"FIELD": "PRIMARYSTORE",
+		"ATTRIBUTENAME": "Primary Store",
+		"TYPE": "text",
+		"SOURCE": "Sale",
+		"OPERATOR": "in",
+		"VALUESELECTED": "",
+		"QUERYCLAUSE": "select PRIMARYSTORE from customer group by PRIMARYSTORE"
 	}
-};
+];
 
 export const LIST_DETAILS = {
 	"Id": "9e838f77-9e06-4d5c-b697-aba4cd629893",
@@ -227,10 +46,12 @@ export const LIST_DETAILS = {
 	"IsDynamic": false,
 	"IsFinalized": 3,
 	"Type": 1,
-	"UiObj": `{"query":{"*":{"*":""}},"condition":"must","shouldHide":true,"rules":[{"condition":"must","dimensionId": "4055361d-7d78-447d-b35f-12d25453ab97", "isRoot":true,"counted":12345,"rules":[{"field":"externalcustomerid","operator":"wildcard","value":"*"},{"field":"firstDownloadedApp","operator":"in_range_of_days","value":{"lt":"30"}}]}],"ruleSetMapping":[{"index":0,"selectedLeft":false,"selectedRight":false,"condition":"must"}]}`,
-	"EsQuery": "{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"wildcard\":{\"externalcu" +
-		"stomerid\":\"*\"}},{\"range\":{\"firstDownloadedApp\":{\"gte\":\"now-30d/d\"}}}]" +
-		"}}]}}}",
+	// "UiObj": `{"query":{"*":{"*":""}},"condition":"must","shouldHide":true,"rules":[{"condition":"must","dimensionId": "4055361d-7d78-447d-b35f-12d25453ab97", "isRoot":true,"counted":12345,"rules":[{"field":"externalcustomerid","operator":"wildcard","value":"*"},{"field":"firstDownloadedApp","operator":"in_range_of_days","value":{"lt":"30"}}]}],"ruleSetMapping":[{"index":0,"selectedLeft":false,"selectedRight":false,"condition":"must"}]}`,
+	"UiObj": ``,
+	// "EsQuery": "{\"query\":{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"wildcard\":{\"externalcu" +
+	// 	"stomerid\":\"*\"}},{\"range\":{\"firstDownloadedApp\":{\"gte\":\"now-30d/d\"}}}]" +
+	// 	"}}]}}}",
+	"EsQuery": ``,
 	"Count": 3420.0,
 	"State": null,
 	"ListSchedule": [

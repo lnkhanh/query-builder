@@ -28,6 +28,7 @@ export const queryList = {
       'gte',
       'lte',
       'range',
+      'not_match',
       'in_range_of_days'
       // 'exists',
       // 'missing',
@@ -46,6 +47,7 @@ export const queryList = {
     ],
     date: [
       'match',
+      'not_match',
       'range',
       'gt',
       'lt',
@@ -72,6 +74,7 @@ export const queryList = {
 export const queryListOperators = {
   match_phrase: 'Equals to',
   match: 'Equals to',
+  not_match: 'Not equals to',
   match_phrase_prefix: 'Begins with',
   gt: '>',
   lt: '<',

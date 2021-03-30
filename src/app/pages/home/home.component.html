@@ -1,8 +1,8 @@
 <as-split direction="horizontal">
   <as-split-area size="100">
     <ng-container>
-      <els-query-builder [dimensions]="dimensions" [data]="componentData"
-        [properties]="queryBuilderProperties" (onChangeEvent)="onQueryUpdate($event)"></els-query-builder>
+      <rs-query-builder [data]="componentData" [properties]="queryBuilderProperties"
+        (onChangeEvent)="onQueryUpdate($event)"></rs-query-builder>
     </ng-container>
   </as-split-area>
   <!-- <as-split-area size="30">

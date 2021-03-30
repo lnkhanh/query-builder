@@ -1,10 +1,6 @@
 import * as moment from 'moment';
-import { queryList, queryListOperators, boolConditionName } from "./components/query-builder/query.list";
-import { QueryBuilderConfig } from "./components/query-builder";
-
-export interface MappingType {
-  properties: any;
-}
+import { queryList, queryListOperators } from "./components/query-builder/query.list";
+import { Property, QueryBuilderConfig } from "./components/query-builder";
 
 export const getESBool = (data: any, config: any) => {
   if (!data.rules || data.rules.length === 0) {
@@ -45,7 +41,7 @@ export const getESBool = (data: any, config: any) => {
 
         if (mdb === undefined) {
           throw new Error(
-            'Unknown elasticsearch operation for operator "{0}"'.replace(
+            'Unknown the operation for operator "{0}"'.replace(
               "{0}",
               rule.operator
             )
@@ -106,7 +102,6 @@ export const getESBool = (data: any, config: any) => {
     return result;
   })(data);
 };
-
 
 export const getOperator = (operatorName) => {
 	if (queryListOperators[operatorName]) {
@@ -174,28 +169,27 @@ export const parseQueryToConditions = (query: any) => {
   })([query], parts);
 };
 
-export const getConfigFromMapping = (mappings: MappingType) => {
-  if (!mappings || !mappings.properties) return { fields: {} };
+export const getConfigFromMapping = (properties: Property[]) => {
+  if (!properties) return { fields: {} };
 
-  const fieldKeys = Object.keys(mappings.properties);
   const config: QueryBuilderConfig = {
     fields: {}
   };
 
-  fieldKeys.forEach(key => {
-    const name = key
+  properties.forEach((val) => {
+    const name = val.ATTRIBUTENAME
       .toLocaleLowerCase()
       .replace(/(^|_)(\w)/g, s => s.toUpperCase().replace("_", " "));
 
-    config.fields[key] = {
+    config.fields[val.FIELD] = {
       name,
-      type: parseDataType(mappings.properties[key].type)
+      type: parseDataType(val.TYPE.toLowerCase()),
+      source: val.SOURCE
     };
   });
 
   return config;
 };
-
 
 function parseDataType(elsType: string) {
   // Numeric

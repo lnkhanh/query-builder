@@ -7,14 +7,13 @@ import {
   Input
 } from "@angular/core";
 import { isObject, has } from 'lodash';
-import { debounceTime, delay } from "rxjs/operators";
-import { of, Subject, Subscription } from "rxjs";
-import { FormBuilder, FormControl, Validators } from "@angular/forms";
+import { delay } from "rxjs/operators";
+import { of, Subscription } from "rxjs";
+import { FormBuilder, FormControl } from "@angular/forms";
 import {
   QueryBuilderConfig,
   DataConfig,
-  RuleSetMapping,
-  Dimension
+  RuleSetMapping
 } from "../query-builder/query-builder.interfaces";
 import { boolConditionName } from "../query-builder/query.list";
 
@@ -29,14 +28,13 @@ import { AdminConfig } from 'src/app/admin.config';
 
 
 @Component({
-  selector: "els-query-builder",
-  templateUrl: "./els-query-builder.component.html",
-  styleUrls: ["./els-query-builder.component.scss"]
+  selector: "rs-query-builder",
+  templateUrl: "./rs-query-builder.component.html",
+  styleUrls: ["./rs-query-builder.component.scss"]
 })
-export class ElsQueryBuilderComponent implements OnInit, OnDestroy {
+export class RsQueryBuilderComponent implements OnInit, OnDestroy {
   @Input() data: DataConfig;
   @Input() properties: any;
-  @Input() dimensions: Dimension[];
   @Output() onChangeEvent = new EventEmitter();
 
   public queryCtrl: FormControl;
@@ -48,6 +46,7 @@ export class ElsQueryBuilderComponent implements OnInit, OnDestroy {
   public getOperator = getOperator;
   public adminConfig = AdminConfig;
   public ruleSetMappingStr: string = "";
+  public sources: string[] = [];
 
   public isRangeOfDay: boolean;
   // Json Editor
@@ -91,6 +90,7 @@ export class ElsQueryBuilderComponent implements OnInit, OnDestroy {
     this.queryConfig = this.data.config;
     this.queryCtrl = this.formBuilder.control(this.queryConfig);
     this.builderConfig = this.data.query;
+    this.sources = this.properties.map(({ SOURCE }) => SOURCE).filter((val, idx, self) => self.indexOf(val) === idx);
 
     this.getMapping();
   }

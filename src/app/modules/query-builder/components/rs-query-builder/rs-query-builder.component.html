@@ -20,7 +20,7 @@
     <as-split-area size="100">
       <!-- Header -->
       <div [style.height.px]="200"></div>
-      <query-builder [(ngModel)]='queryConfig' [dimensions]="dimensions" [config]='builderConfig'
+      <query-builder [(ngModel)]='queryConfig' [sources]="sources" [config]='builderConfig'
         (dataOnChange)="onQueryChange($event)" [allowCollapse]="true">
         <ng-container
           *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
@@ -52,7 +52,8 @@
           <mat-form-field>
             <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
               <mat-option>
-                <ngx-mat-select-search placeholderLabel="Search..." [formControl]="propertyFilterCtrl">
+                <ngx-mat-select-search placeholderLabel="Search..." [formControl]="propertyFilterCtrl"
+                  noEntriesFoundLabel="No properties found!">
                 </ngx-mat-select-search>
               </mat-option>
               <mat-option *ngFor="let field of getFields(rule.entity)" [value]="field.value">

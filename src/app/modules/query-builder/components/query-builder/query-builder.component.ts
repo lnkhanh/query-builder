@@ -33,9 +33,7 @@ import {
   ArrowIconContext,
   Rule,
   RuleSet,
-  EmptyWarningContext,
-  RuleSetMapping,
-  Dimension
+  EmptyWarningContext
 } from "./query-builder.interfaces";
 import {
   ChangeDetectorRef,
@@ -46,7 +44,6 @@ import {
   Input,
   OnChanges,
   OnInit,
-  AfterViewChecked,
   QueryList,
   SimpleChanges,
   TemplateRef,
@@ -58,6 +55,8 @@ import {
 } from "@angular/core";
 import { queryList, boolConditionName } from "./query.list";
 import { Subscription, BehaviorSubject } from 'rxjs';
+import { QueryBuilderService } from '../../query-builder.service';
+import { take } from 'rxjs/operators';
 
 export const CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -143,7 +142,7 @@ export class QueryBuilderComponent
   @Input() ruleSetIndex: number;
   @Input() allowRuleset: boolean = true;
   @Input() allowCollapse: boolean = false;
-  @Input() dimensions: Dimension[];
+  @Input() sources: string[];
   @Input() emptyMessage: string =
     "A Sub-Query cannot be empty. Please add a condition or remove it all together.";
   @Input() classNames: QueryBuilderClassNames;
@@ -216,12 +215,12 @@ export class QueryBuilderComponent
 
   private unsubscribes: Subscription[] = [];
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { 
+  constructor(private changeDetectorRef: ChangeDetectorRef, private queryBuilderSvc: QueryBuilderService) {
   }
 
   // ----------OnInit Implementation----------
 
-  ngOnInit() { 
+  ngOnInit() {
   }
 
   // ----------OnChanges Implementation----------
@@ -282,9 +281,10 @@ export class QueryBuilderComponent
   get value(): RuleSet {
     return this.data;
   }
+
   set value(value: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { dimensionId: '', condition: "must", rules: [], isRoot: true, counted: 0 };
+    this.data = value || { source: '', condition: "must", rules: [], isRoot: true, counted: 0 };
     this.handleDataChange();
   }
 
@@ -377,12 +377,13 @@ export class QueryBuilderComponent
         fs = this.fields;
       }
 
-      return fs;
+      return fs.filter(field => this.data.source === field.source);
     } else {
       search = search.toLowerCase();
     }
+
     // filter the banks
-    return this.fields.filter(field => field.name.toLowerCase().indexOf(search) > -1);
+    return this.fields.filter(field => this.data.source === field.source && field.name.toLowerCase().indexOf(search) > -1);
   }
 
   getInputType(field: string, operator: string): string {
@@ -472,7 +473,9 @@ export class QueryBuilderComponent
     if (this.config.addRule) {
       this.config.addRule(parent);
     } else {
-      const field = this.fields[0];
+      const fieldsFiltered = this.fields.filter(f => parent.source === f.source);
+      // fieldsFiltered is undefined never existed
+      const field: Field = fieldsFiltered[0];
       parent.rules = (parent.rules || []).concat([
         {
           field: field.value,
@@ -509,7 +512,7 @@ export class QueryBuilderComponent
   }
 
   addRuleSet(index: number): void {
-    if (this.disabled || !this.dimensions.length) {
+    if (this.disabled || !this.sources.length) {
       return;
     }
     let parent = this.data;
@@ -517,9 +520,9 @@ export class QueryBuilderComponent
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = (parent.rules || []).concat([{ index, dimensionId: this.dimensions[0].Id, condition: "must", rules: [], isRoot: true, counted: 0 }]);
+      parent.rules = (parent.rules || []).concat([{ index, source: this.sources[0], condition: "must", rules: [], isRoot: true, counted: 0 }]);
       parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, isLeftDisabled: false, isRightDisabled: false, condition: "must" });
-    
+
       // Add first set
       const parentJustAdded = <RuleSet>parent.rules[parent.rules.length - 1];
       this.addRule(parentJustAdded);
@@ -594,11 +597,11 @@ export class QueryBuilderComponent
           if (this.data.ruleSetMapping[i].selectedLeft === true) {
             this.data.ruleSetMapping[i].selectedLeft = false;
             this.data.ruleSetMapping[i].isRightDisabled = false;
-            
+
             this.data.ruleSetMapping[index].selectedLeft = true;
             this.data.ruleSetMapping[index].isRightDisabled = true;
             console.log('im here');
-            
+
             if (this.data.ruleSetMapping[i].selectedRight === true) {
               this.data.ruleSetMapping[i].isLeftDisabled = true;
             }
@@ -745,6 +748,15 @@ export class QueryBuilderComponent
     this.handleDataChange();
   }
 
+  changeSource(): void {
+    if (this.disabled) {
+      return;
+    }
+
+    this.data.rules = [];
+    this.addRule(this.data);
+  }
+
   changeOperator(rule: Rule): void {
     if (this.disabled) {
       return;
@@ -764,6 +776,16 @@ export class QueryBuilderComponent
     this.handleDataChange();
   }
 
+  async onCountRuleSet() {
+    this.queryBuilderSvc.fetchCountRuleSets().pipe(
+      take(1)
+    ).subscribe((counted) => {
+      if (counted) {
+        this.data.counted = counted;
+      }
+    });
+  }
+
   coerceValueForOperator(operator: string, value: any, rule: Rule): any {
     switch (operator) {
       case 'range': {
@@ -777,6 +799,7 @@ export class QueryBuilderComponent
           gt: '',
         };
       }
+      case 'in_range_of_days':
       case 'lt': {
         return {
           lt: '',
@@ -790,11 +813,6 @@ export class QueryBuilderComponent
       case 'lte': {
         return {
           lte: '',
-        };
-      }
-      case 'in_range_of_days': {
-        return {
-          lt: '',
         };
       }
       default: {
@@ -1077,16 +1095,6 @@ export class QueryBuilderComponent
     return this.inputContextCache.get(rule);
   }
 
-  getDimension(dimensionId: string) {
-    const found = this.dimensions.find((d) => d.Id === dimensionId);
-
-    if (!found) {
-      return '[Please select dimension]';
-    }
-
-    return found.Name;
-  }
-
   onQueryChange($event) {
     this.dataOnChange.emit($event);
   }
@@ -1120,16 +1128,22 @@ export class QueryBuilderComponent
     }
 
     this.swap(this.data.rules, previousIndex, currentIndex);
+    this.clearCounted();
   }
 
-  private swap(array:any[], x: any, y: any) {
+  private swap(array: any[], x: any, y: any) {
     var b = array[x];
     array[x].index = y;
     array[y].index = x;
-    
+
     array[x] = array[y];
     array[y] = b;
+  }
 
+  private clearCounted() {
+    this.data.rules.forEach((ruleSet: RuleSet) => {
+      ruleSet.counted = 0;
+    });
   }
 
   private checkEmptyRuleInRuleset(ruleset: RuleSet): boolean {

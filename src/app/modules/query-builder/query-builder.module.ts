@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, } from '@angular/forms';
 import { AngularSplitModule } from 'angular-split';
@@ -6,22 +6,22 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMaskModule } from 'ngx-mask';
 import {
-    QueryInputDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryOperatorDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective,
+  QueryInputDirective,
+  QueryFieldDirective,
+  QueryEntityDirective,
+  QueryOperatorDirective,
+  QueryButtonGroupDirective,
+  QuerySwitchGroupDirective,
+  QueryRemoveButtonDirective,
+  QueryEmptyWarningDirective,
+  QueryArrowIconDirective,
+  QueryBuilderOptions,
 } from './components/query-builder';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
-// import { PartialsModule } from '../../partials/partials.module';
 import { JsonEditorModule } from '../json-editor/json-editor.module';
 import { QueryBuilderComponent } from './components/query-builder/query-builder.component';
-import { ElsQueryBuilderComponent } from './components/els-query-builder/els-query-builder.component';
+import { RsQueryBuilderComponent } from './components/rs-query-builder/rs-query-builder.component';
 import { QueryEditorModalComponent } from './components/query-editor-modal/query-editor-modal.component';
 import {
   MatInputModule,
@@ -47,16 +47,18 @@ import {
   MatSnackBarModule,
   MatTooltipModule,
   MatDividerModule,
-  MAT_DIALOG_DEFAULT_OPTIONS,
-  MAT_DIALOG_DATA
 } from "@angular/material";
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.component';
+import { QueryBuilderService } from './query-builder.service';
+import { HttpClientModule } from '@angular/common/http';
+import { QueryBuilderConfigService } from './query-builder-config.service';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
 
     // Material
     MatInputModule,
@@ -99,7 +101,7 @@ import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.com
   ],
   declarations: [
     QueryBuilderComponent,
-    ElsQueryBuilderComponent,
+    RsQueryBuilderComponent,
     QueryInputDirective,
     QueryOperatorDirective,
     QueryFieldDirective,
@@ -114,7 +116,7 @@ import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.com
   ],
   exports: [
     QueryBuilderComponent,
-    ElsQueryBuilderComponent,
+    RsQueryBuilderComponent,
     QueryInputDirective,
     QueryOperatorDirective,
     QueryFieldDirective,
@@ -156,9 +158,23 @@ import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.com
     NgxMatDatetimePickerModule,
   ],
   providers: [
+    QueryBuilderService
   ],
   entryComponents: [
     QueryEditorModalComponent
   ]
 })
-export class QueryBuilderModule { }
+export class QueryBuilderModule {
+  static forRoot(config: QueryBuilderOptions): ModuleWithProviders {
+    return {
+      ngModule: QueryBuilderModule,
+      providers: [
+        QueryBuilderService,
+        {
+          provide: QueryBuilderConfigService,
+          useValue: config
+        }
+      ]
+    };
+  }
+}

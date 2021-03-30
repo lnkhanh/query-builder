@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DataConfig, Dimension } from 'src/app/modules/query-builder/components/query-builder';
-import { DIMENSIONS, LIST_DETAILS, SAMPLE_PROPERTIES } from './mock-data';
+import { DataConfig } from 'src/app/modules/query-builder/components/query-builder';
+import { LIST_DETAILS, SAMPLE_PROPERTIES } from './mock-data';
 
 @Component({
   selector: 'app-home',
@@ -10,11 +10,18 @@ import { DIMENSIONS, LIST_DETAILS, SAMPLE_PROPERTIES } from './mock-data';
 export class HomeComponent implements OnInit {
   componentData: DataConfig = {
     query: { condition: "must", rules: [] },
-    config: { query: { "*": { "*": "" } }, condition: "must", shouldHide: true }
+    config: { query: { "*": { "*": "" } }, condition: "must", shouldHide: true, rules: [
+      {
+        "condition": "must",
+        "source": "Customer", 
+        "isRoot": true,
+        "counted": 0,
+        "rules":[{"field":"DateOfBirth","operator":"match","value":""}]
+      }
+    ], ruleSetMapping: [{"index":0,"selectedLeft":false,"selectedRight":false,"condition":"must"}] }
   };
   data = LIST_DETAILS;
   queryBuilderProperties = SAMPLE_PROPERTIES;
-  dimensions: Dimension[] = DIMENSIONS;
   
   constructor() { }
 

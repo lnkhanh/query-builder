@@ -1,4 +1,18 @@
-import { ValidationErrors, FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms';
+
+export interface QueryBuilderOptions {
+  apiEndpoint: string
+}
+
+export interface Property {
+  FIELD: string;
+  ATTRIBUTENAME: string;
+  TYPE: string;
+  SOURCE: string;
+  OPERATOR: string;
+  VALUESELECTED: string;
+  QUERYCLAUSE: string;
+}
 
 export interface DataConfig {
   query: any;
@@ -7,7 +21,7 @@ export interface DataConfig {
 
 export interface RuleSet {
   index?: number;
-  dimensionId: string;
+  source: string;
   condition: string;
   rules: Array<RuleSet | Rule>;
   isRoot: boolean;
@@ -38,13 +52,6 @@ export interface Option {
   value: any;
 }
 
-export interface Dimension {
-  Id: string;
-  Name: string;
-  Value: string;
-  Description?: any;
-}
-
 export interface FieldMap {
   [key: string]: Field;
 }
@@ -53,6 +60,7 @@ export interface Field {
   name: string;
   value?: string;
   type: string;
+  source: string;
   nullable?: boolean;
   options?: Option[];
   operators?: string[];

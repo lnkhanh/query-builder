@@ -7,6 +7,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { QueryBuilderModule } from './modules/query-builder';
 import { HomeComponent } from './pages/home/home.component';
 import { AngularSplitModule } from 'angular-split';
+import { QueryBuilderOptions } from './modules/query-builder/components/query-builder';
+
+const queryBuilderConfig: QueryBuilderOptions = {
+  apiEndpoint: 'https://abc.com'
+};
 
 @NgModule({
   declarations: [
@@ -17,7 +22,7 @@ import { AngularSplitModule } from 'angular-split';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    QueryBuilderModule,
+    QueryBuilderModule.forRoot(queryBuilderConfig),
     AngularSplitModule.forChild(),
   ],
   providers: [],

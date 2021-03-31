@@ -2,17 +2,18 @@ import {
   Component,
   Input,
   ViewChild,
-  OnDestroy
-} from "@angular/core";
-import { Subject, Subscription } from "rxjs";
+  OnDestroy,
+  AfterViewInit
+} from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
 
 @Component({
-  selector: "query-json-editor",
-  templateUrl: "./json-editor.component.html",
-  styleUrls: ["./json-editor.component.scss"]
+  selector: 'app-query-json-editor',
+  templateUrl: './json-editor.component.html',
+  styleUrls: ['./json-editor.component.scss']
 })
-export class JsonEditorComponent implements OnDestroy {
-  @ViewChild("jsonEditor", { static: false }) private editorElement;
+export class JsonEditorComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('jsonEditor', { static: false }) private editorElement;
   @Input() onSubscription: Subject<string>;
   @Input() onCopySubscription: Subject<any>;
   private subscriptions: Subscription[] = [];
@@ -22,7 +23,7 @@ export class JsonEditorComponent implements OnDestroy {
   public options = {
     lineNumbers: true,
     mode: {
-      name: "javascript",
+      name: 'javascript',
       json: true
     },
     autoCloseBrackets: true,
@@ -31,17 +32,17 @@ export class JsonEditorComponent implements OnDestroy {
     indentWithTabs: true,
     tabSize: 2,
     extraKeys: {
-      "Ctrl-Q": function(cm) {
+      'Ctrl-Q'(cm) {
         cm.foldCode(cm.getCursor());
       }
     },
     foldGutter: true,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
   };
 
   ngAfterViewInit() {
     this.editor = this.editorElement.codeMirror;
-    
+
     const contentSubscription = this.onSubscription.subscribe(content => {
       this.editor.setValue(content);
     });
@@ -56,16 +57,16 @@ export class JsonEditorComponent implements OnDestroy {
   }
 
   copyQuery() {
-    let selBox = document.createElement("textarea");
-    selBox.style.position = "fixed";
-    selBox.style.left = "0";
-    selBox.style.top = "0";
-    selBox.style.opacity = "0";
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
     selBox.value = this.editor.getValue();
     document.body.appendChild(selBox);
     selBox.focus();
     selBox.select();
-    document.execCommand("copy");
+    document.execCommand('copy');
     document.body.removeChild(selBox);
   }
 

@@ -92,37 +92,9 @@
               </div>
             </ng-template>
 
-            <div *ngIf="entities?.length > 0" class="q-inline-block-display">
-              <ng-container *ngIf="getEntityTemplate() as template; else defaultEntity">
-                <ng-container *ngTemplateOutlet="template; context: getEntityContext(rule)"></ng-container>
-              </ng-container>
-            </div>
-
-            <ng-template #defaultEntity>
-              <div [ngClass]="getClassNames('entityControlSize')">
-                <select [ngClass]="getClassNames('entityControl')" [(ngModel)]="rule.entity"
-                  (ngModelChange)="changeEntity($event, rule,i,data)" [disabled]="disabled">
-                  <option *ngFor="let entity of entities" [ngValue]="entity.value">
-                    {{entity.name}}
-                  </option>
-                </select>
-              </div>
-            </ng-template>
-
-            <ng-container *ngIf="getFieldTemplate() as template; else defaultField">
+            <ng-container *ngIf="getFieldTemplate() as template;">
               <ng-container *ngTemplateOutlet="template; context: getFieldContext(rule)"></ng-container>
             </ng-container>
-
-            <ng-template #defaultField>
-              <div [ngClass]="getClassNames('fieldControlSize')">
-                <select [ngClass]="getClassNames('fieldControl')" [(ngModel)]="rule.field"
-                  (ngModelChange)="changeField($event, rule)" [disabled]="disabled">
-                  <option *ngFor="let field of getFields(rule.entity)" [ngValue]="field.value">
-                    {{field.name}}
-                  </option>
-                </select>
-              </div>
-            </ng-template>
 
             <ng-container *ngIf="getOperatorTemplate() as template; else defaultOperator">
               <ng-container *ngTemplateOutlet="template; context: getOperatorContext(rule)"></ng-container>
@@ -247,7 +219,7 @@
         <!-- \End footer -->
       </ng-container>
     </ng-container>
-    <li *ngIf="!data.shouldHide" [ngStyle]="{ 'padding': '0 6px', 'text-align': 'center' }">
+    <li *ngIf="data.isRoot" [ngStyle]="{ 'padding': '0 6px', 'text-align': 'center' }">
       <button type="button" mat-mini-fab color="primary" matTooltip="Add condition" matTooltipPosition="right"
         (click)="addRule()" [disabled]="!data.condition">
         <i [ngClass]="getClassNames('addIcon')"></i>

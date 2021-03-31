@@ -5,7 +5,7 @@ import { QueryBuilderConfigService } from './query-builder-config.service';
 
 @Injectable()
 export class QueryBuilderService {
-  constructor(@Inject(QueryBuilderConfigService) private _config, private _api: HttpClient) { }
+	constructor(@Inject(QueryBuilderConfigService) private _config, private _api: HttpClient) { }
 
 	fetchCountRuleSets() {
 		console.log(this._config);

@@ -5,32 +5,30 @@ import {
   Output,
   EventEmitter,
   Input
-} from "@angular/core";
+} from '@angular/core';
 import { isObject, has } from 'lodash';
-import { delay } from "rxjs/operators";
-import { of, Subscription } from "rxjs";
-import { FormBuilder, FormControl } from "@angular/forms";
+import { delay } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
+import { FormBuilder, FormControl } from '@angular/forms';
 import {
   QueryBuilderConfig,
   DataConfig,
   RuleSetMapping
-} from "../query-builder/query-builder.interfaces";
-import { boolConditionName } from "../query-builder/query.list";
+} from '../query-builder/query-builder.interfaces';
+import { boolConditionName } from '../query-builder/query.list';
 
 import {
-  getESBool,
   getConfigFromMapping,
-  getOperator
-} from "../../query-builder.helper";
-import { QueryEditorModalComponent } from "../query-editor-modal/query-editor-modal.component";
+} from '../../query-builder.helper';
+import { QueryEditorModalComponent } from '../query-editor-modal/query-editor-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AdminConfig } from 'src/app/admin.config';
 
 
 @Component({
-  selector: "rs-query-builder",
-  templateUrl: "./rs-query-builder.component.html",
-  styleUrls: ["./rs-query-builder.component.scss"]
+  selector: 'rs-query-builder',
+  templateUrl: './rs-query-builder.component.html',
+  styleUrls: ['./rs-query-builder.component.scss']
 })
 export class RsQueryBuilderComponent implements OnInit, OnDestroy {
   @Input() data: DataConfig;
@@ -42,19 +40,18 @@ export class RsQueryBuilderComponent implements OnInit, OnDestroy {
   public queryConfig: any = {
     query: {}
   };
-  public queryResult = "";
-  public getOperator = getOperator;
+  public queryResult = '';
   public adminConfig = AdminConfig;
-  public ruleSetMappingStr: string = "";
+  public ruleSetMappingStr = '';
   public sources: string[] = [];
 
   public isRangeOfDay: boolean;
   // Json Editor
   public options = {
-    theme: "material",
+    theme: 'material',
     lineNumbers: true,
     mode: {
-      name: "javascript",
+      name: 'javascript',
       json: true
     },
     autoCloseBrackets: true,
@@ -63,12 +60,12 @@ export class RsQueryBuilderComponent implements OnInit, OnDestroy {
     indentWithTabs: true,
     tabSize: 2,
     extraKeys: {
-      "Ctrl-Q": function (cm) {
+      'Ctrl-Q'(cm) {
         cm.foldCode(cm.getCursor());
       }
     },
     foldGutter: true,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
   };
 
   private unsubscribes: Subscription[] = [];
@@ -81,15 +78,15 @@ export class RsQueryBuilderComponent implements OnInit, OnDestroy {
   }
 
   changeDisabled(event: Event) {
-    (<HTMLInputElement>event.target).checked
+    (event.target as HTMLInputElement).checked
       ? this.queryCtrl.disable()
       : this.queryCtrl.enable();
   }
 
   ngOnInit() {
-    this.queryConfig = this.data.config;
+    this.queryConfig = this.data.query;
     this.queryCtrl = this.formBuilder.control(this.queryConfig);
-    this.builderConfig = this.data.query;
+    this.builderConfig = this.data.config;
     this.sources = this.properties.map(({ SOURCE }) => SOURCE).filter((val, idx, self) => self.indexOf(val) === idx);
 
     this.getMapping();
@@ -101,31 +98,33 @@ export class RsQueryBuilderComponent implements OnInit, OnDestroy {
         delay(100),
       )
       .subscribe(() => {
-        const result = {
-          query: getESBool(this.queryConfig, this.builderConfig)
-        };
-        const resultStr = JSON.stringify(result, null, 2);
-        this.queryResult = resultStr;
-        console.log(this.queryConfig);
-
-        const tempOperator = this.queryConfig.rules.map(x => x.rules);
-
-        if (tempOperator[0]) {
-          const tempRangeOfDay = tempOperator[0].map(x => x.operator)
-
-          if (tempRangeOfDay.find(x => x === 'in_range_of_days')) {
-            this.isRangeOfDay = true;
-          }
-          else {
-            this.isRangeOfDay = false;
-          }
-        }
-
+        console.log(JSON.stringify(this.queryConfig, null, 2));
         this._getRuleSetMappingString();
-        this.onChangeEvent.emit({
-          query: result,
-          config: this.queryConfig
-        });
+        //     const result = {
+        //       query: getESBool(this.queryConfig, this.builderConfig)
+        //     };
+        //     const resultStr = JSON.stringify(result, null, 2);
+        //     this.queryResult = resultStr;
+        //     console.log(this.queryConfig);
+
+        //     const tempOperator = this.queryConfig.rules.map(x => x.rules);
+
+        //     if (tempOperator[0]) {
+        //       const tempRangeOfDay = tempOperator[0].map(x => x.operator)
+
+        //       if (tempRangeOfDay.find(x => x === 'in_range_of_days')) {
+        //         this.isRangeOfDay = true;
+        //       }
+        //       else {
+        //         this.isRangeOfDay = false;
+        //       }
+        //     }
+
+        //     this._getRuleSetMappingString();
+        //     this.onChangeEvent.emit({
+        //       query: result,
+        //       config: this.queryConfig
+        //     });
       });
   }
 
@@ -152,18 +151,18 @@ export class RsQueryBuilderComponent implements OnInit, OnDestroy {
   }
 
   private _getRuleSetMappingString() {
-    if (!this.queryConfig) return;
-    this.ruleSetMappingStr = "";
+    if (!this.queryConfig) { return; }
+    this.ruleSetMappingStr = '';
 
     this.queryConfig.ruleSetMapping.forEach((ruleSet: RuleSetMapping, idx: number) => {
       if (ruleSet.selectedLeft === true && ruleSet.selectedRight === false) {
-        this.ruleSetMappingStr += "[";
+        this.ruleSetMappingStr += '[';
       }
 
       this.ruleSetMappingStr += ruleSet.index + 1;
 
       if (ruleSet.selectedRight === true && ruleSet.selectedLeft === false) {
-        this.ruleSetMappingStr += "]";
+        this.ruleSetMappingStr += ']';
       }
 
       if (idx < this.queryConfig.ruleSetMapping.length - 1) {

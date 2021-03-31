@@ -1,15 +1,15 @@
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subject } from "rxjs";
+import { Subject } from 'rxjs';
 
 @Component({
-  selector: "app-query-editor-modal",
-  templateUrl: "./query-editor-modal.component.html"
+  selector: 'app-query-editor-modal',
+  templateUrl: './query-editor-modal.component.html'
 })
 export class QueryEditorModalComponent implements OnInit {
   public jsonEditorSubject = new Subject<string>();
   public copySubject = new Subject<any>();
-  copyTextBtn: string = 'Copy query';
+  copyTextBtn = 'Copy query';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: string) {}
 
@@ -21,7 +21,7 @@ export class QueryEditorModalComponent implements OnInit {
 
     setTimeout(() => {
       self.copyTextBtn = 'Copy query';
-    }, 500);    
+    }, 500);
   }
 
   ngOnInit() {

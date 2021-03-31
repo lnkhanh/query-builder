@@ -47,7 +47,7 @@ import {
   MatSnackBarModule,
   MatTooltipModule,
   MatDividerModule,
-} from "@angular/material";
+} from '@angular/material';
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { FunnelChartComponent } from './components/funnel-chart/funnel-chart.component';
 import { QueryBuilderService } from './query-builder.service';

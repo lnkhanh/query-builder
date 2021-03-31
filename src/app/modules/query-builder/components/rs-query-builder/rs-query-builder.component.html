@@ -12,7 +12,7 @@
         <textarea rows="3" disabled>{{ ruleSetMappingStr }}</textarea>
       </div>
       <div>
-        <funnel-chart></funnel-chart>
+        <app-funnel-chart></app-funnel-chart>
       </div>
     </div>
   </div>
@@ -38,15 +38,6 @@
           </button>
         </ng-container>
 
-        <ng-container *queryEntity="let rule; let entities=entities; let onChange=onChange">
-          <mat-form-field>
-            <mat-select [(ngModel)]="rule.entity" (ngModelChange)="onChange($event, rule)">
-              <mat-option *ngFor="let entity of entities" [value]="entity.value">
-                {{entity.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
         <ng-container
           *queryField="let rule; let fields=fields; let onChange=onChange; let getFields = getFields; let propertyFilterCtrl = propertyFilterCtrl">
           <mat-form-field>
@@ -62,11 +53,21 @@
             </mat-select>
           </mat-form-field>
         </ng-container>
+        
+        <ng-container *queryField="let rule; let fields=fields; let onChange=onChange; let getFields = getFields">
+          <mat-form-field>
+            <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
+              <mat-option *ngFor="let field of getFields(rule.entity)" [value]="field.value">
+                {{ field.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
         <ng-container *queryOperator="let rule; let operators=operators; let onChange=onChange">
-          <mat-form-field class="query-operator">
+          <mat-form-field [style.width.px]="90">
             <mat-select [(ngModel)]="rule.operator" (ngModelChange)="onChange(rule)">
               <mat-option *ngFor="let value of operators" [value]="value">
-                {{ getOperator(value) }}
+                {{ value }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -74,8 +75,7 @@
         <ng-container *queryInput="let rule; type: 'boolean'; let onChange=onChange">
           <mat-checkbox [(ngModel)]="rule.value" (ngModelChange)="onChange()"></mat-checkbox>
         </ng-container>
-        <ng-container
-          *queryInput="let rule; let field=field; let options=options; type: 'category'; let onChange=onChange">
+        <ng-container *queryInput="let rule; let field=field; let options=options; type: 'category'; let onChange=onChange">
           <mat-form-field>
             <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
               <mat-option *ngFor="let opt of options" [value]="opt.value">
@@ -85,14 +85,14 @@
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; type: 'date'; let onChange=onChange">
-          <mat-form-field class="query-input query-input-date">
+          <mat-form-field>
             <input matInput [matDatepicker]="picker" [(ngModel)]="rule.value" (ngModelChange)="onChange()">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; let options=options; type: 'multiselect'; let onChange=onChange">
-          <mat-form-field class="query-input query-input-multiselect">
+          <mat-form-field [style.width.px]="300">
             <mat-select [(ngModel)]="rule.value" multiple (ngModelChange)="onChange()">
               <mat-option *ngFor="let opt of options" [value]="opt.value">
                 {{ opt.name }}
@@ -100,40 +100,20 @@
             </mat-select>
           </mat-form-field>
         </ng-container>
-        <ng-container *queryInput="let rule; let field=field; type: 'numeric'; let onChange=onChange">
-          <mat-form-field class="query-input">
+        <ng-container *queryInput="let rule; let field=field; type: 'number'; let onChange=onChange">
+          <mat-form-field [style.width.px]="50">
             <input matInput [(ngModel)]="rule.value" type="number" (ngModelChange)="onChange()">
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; let field=field; type: 'string'; let onChange=onChange">
-          <mat-form-field class="query-input query-input-string">
+          <mat-form-field>
             <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
           </mat-form-field>
         </ng-container>
         <ng-container *queryInput="let rule; let field=field; type: 'textarea'; let onChange=onChange">
           <mat-form-field>
             <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
-                              </textarea>
-          </mat-form-field>
-        </ng-container>
-
-        <ng-container *queryInput="let rule; let field=field; type: 'numberRange'; let onChange=onChange">
-          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'gte')">
-            <input matInput [(ngModel)]="rule.value.gte" placeholder="From" (ngModelChange)="onChange()" type="text">
-          </mat-form-field>
-          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'lte')">
-            <input matInput [(ngModel)]="rule.value.lte" placeholder="To" (ngModelChange)="onChange()" type="text">
-          </mat-form-field>
-          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'gt')">
-            <input matInput [(ngModel)]="rule.value.gt" placeholder="" (ngModelChange)="onChange()" type="text">
-          </mat-form-field>
-          <mat-form-field class="query-input" *ngIf="checkHasProperty(rule.value, 'lt') && !isRangeOfDay">
-            <input matInput [(ngModel)]="rule.value.lt" placeholder="" (ngModelChange)="onChange()" type="text">
-          </mat-form-field>
-          <mat-form-field class="query-input query-input-range-of-day"
-            *ngIf="checkHasProperty(rule.value, 'lt') && isRangeOfDay">
-            <input matInput [mask]="adminConfig.mask.integer" [(ngModel)]="rule.value.lt" placeholder="Number of Days"
-              (ngModelChange)="onChange()" type="text" required>
+            </textarea>
           </mat-form-field>
         </ng-container>
       </query-builder>

@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
 
 export interface QueryBuilderOptions {
-  apiEndpoint: string
+  apiEndpoint: string;
 }
 
 export interface Property {
@@ -12,6 +12,10 @@ export interface Property {
   OPERATOR: string;
   VALUESELECTED: string;
   QUERYCLAUSE: string;
+
+  // Custom fields
+  options?: Option[];
+  nullable?: boolean;
 }
 
 export interface DataConfig {
@@ -44,7 +48,7 @@ export interface Rule {
   field: string;
   value?: any;
   operator?: string;
-  entity?: string;
+  options?: Option[];
 }
 
 export interface Option {

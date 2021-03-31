@@ -6,16 +6,16 @@ import {
   ValidationErrors,
   Validator,
   FormControl
-} from "@angular/forms";
-import { QueryOperatorDirective } from "./query-operator.directive";
-import { QueryFieldDirective } from "./query-field.directive";
-import { QueryEntityDirective } from "./query-entity.directive";
-import { QuerySwitchGroupDirective } from "./query-switch-group.directive";
-import { QueryButtonGroupDirective } from "./query-button-group.directive";
-import { QueryInputDirective } from "./query-input.directive";
-import { QueryRemoveButtonDirective } from "./query-remove-button.directive";
-import { QueryEmptyWarningDirective } from "./query-empty-warning.directive";
-import { QueryArrowIconDirective } from "./query-arrow-icon.directive";
+} from '@angular/forms';
+import { QueryOperatorDirective } from './query-operator.directive';
+import { QueryFieldDirective } from './query-field.directive';
+import { QueryEntityDirective } from './query-entity.directive';
+import { QuerySwitchGroupDirective } from './query-switch-group.directive';
+import { QueryButtonGroupDirective } from './query-button-group.directive';
+import { QueryInputDirective } from './query-input.directive';
+import { QueryRemoveButtonDirective } from './query-remove-button.directive';
+import { QueryEmptyWarningDirective } from './query-empty-warning.directive';
+import { QueryArrowIconDirective } from './query-arrow-icon.directive';
 import {
   ButtonGroupContext,
   Entity,
@@ -34,7 +34,7 @@ import {
   Rule,
   RuleSet,
   EmptyWarningContext
-} from "./query-builder.interfaces";
+} from './query-builder.interfaces';
 import {
   ChangeDetectorRef,
   Component,
@@ -52,8 +52,8 @@ import {
   Output,
   EventEmitter,
   OnDestroy
-} from "@angular/core";
-import { queryList, boolConditionName } from "./query.list";
+} from '@angular/core';
+import { boolConditionName, defaultBooleanQuery } from './query.list';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { QueryBuilderService } from '../../query-builder.service';
 import { take } from 'rxjs/operators';
@@ -71,9 +71,9 @@ export const VALIDATOR: any = {
 };
 
 @Component({
-  selector: "query-builder",
-  templateUrl: "./query-builder.component.html",
-  styleUrls: ["./query-builder.component.scss"],
+  selector: 'query-builder',
+  templateUrl: './query-builder.component.html',
+  styleUrls: ['./query-builder.component.scss'],
   providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR],
   host: {
     '[class]': 'hostClasses'
@@ -83,52 +83,52 @@ export class QueryBuilderComponent
   implements OnInit, OnChanges, ControlValueAccessor, Validator, OnDestroy {
   public fields: Field[];
   public filteredFields: BehaviorSubject<Field[]> = new BehaviorSubject<Field[]>([]);
-  public entities: Entity[];
   public defaultClassNames: QueryBuilderClassNames = {
-    arrowIconButton: "q-arrow-icon-button",
-    arrowIcon: "q-icon q-arrow-icon",
-    removeIcon: "q-icon q-remove-icon",
-    addIcon: "q-icon q-add-icon",
-    button: "q-button",
-    buttonGroup: "q-button-group",
-    removeButton: "q-remove-button",
-    switchGroup: "q-switch-group",
-    switchLabel: "q-switch-label",
-    switchRadio: "q-switch-radio",
-    rightAlign: "q-right-align",
-    transition: "q-transition",
-    collapsed: "q-collapsed",
-    treeContainer: "q-tree-container",
-    tree: "q-tree",
-    row: "q-row",
-    connector: "q-connector",
-    rule: "q-rule",
-    invalidRule: "q-invalid-rule",
-    ruleSet: "q-ruleset",
-    invalidRuleSet: "q-invalid-ruleset",
-    emptyWarning: "q-empty-warning",
-    fieldControl: "q-field-control",
-    fieldControlSize: "q-control-size",
-    entityControl: "q-entity-control",
-    entityControlSize: "q-control-size",
-    operatorControl: "q-operator-control",
-    operatorControlSize: "q-control-size",
-    inputControl: "q-input-control",
-    inputControlSize: "q-control-size",
+    arrowIconButton: 'q-arrow-icon-button',
+    arrowIcon: 'q-icon q-arrow-icon',
+    removeIcon: 'q-icon q-remove-icon',
+    addIcon: 'q-icon q-add-icon',
+    button: 'q-button',
+    buttonGroup: 'q-button-group',
+    removeButton: 'q-remove-button',
+    switchGroup: 'q-switch-group',
+    switchLabel: 'q-switch-label',
+    switchRadio: 'q-switch-radio',
+    rightAlign: 'q-right-align',
+    transition: 'q-transition',
+    collapsed: 'q-collapsed',
+    treeContainer: 'q-tree-container',
+    tree: 'q-tree',
+    row: 'q-row',
+    connector: 'q-connector',
+    rule: 'q-rule',
+    invalidRule: 'q-invalid-rule',
+    ruleSet: 'q-ruleset',
+    invalidRuleSet: 'q-invalid-ruleset',
+    emptyWarning: 'q-empty-warning',
+    fieldControl: 'q-field-control',
+    fieldControlSize: 'q-control-size',
+    entityControl: 'q-entity-control',
+    entityControlSize: 'q-control-size',
+    operatorControl: 'q-operator-control',
+    operatorControlSize: 'q-control-size',
+    inputControl: 'q-input-control',
+    inputControlSize: 'q-control-size',
 
     // switchRow: "px-2",
-    switchControl: "custom-control custom-control-inline"
+    switchControl: 'custom-control custom-control-inline'
   };
 
   public defaultOperatorMap: { [key: string]: string[] } = {
-    string: queryList.analyzed.string,
-    numeric: queryList.analyzed.numeric,
-    date: queryList.analyzed.numeric,
-    time: ["=", "!=", ">", ">=", "<", "<="],
-    category: ["=", "!=", "in", "not in"],
-    boolean: ["="]
+    string: ['=', '!=', 'contains', 'like'],
+    number: ['=', '!=', '>', '>=', '<', '<='],
+    time: ['=', '!=', '>', '>=', '<', '<='],
+    date: ['=', '!=', '>', '>=', '<', '<='],
+    category: ['=', '!=', 'in', 'not in'],
+    boolean: ['='],
+    textarea: ['=', '!=']
   };
-  public defaultBooleanQuery: string[] = queryList.boolQuery;
+  public defaultBooleanQuery = defaultBooleanQuery;
   public propertyFilterCtrl: FormControl = new FormControl();
   public hostClasses = '';
 
@@ -140,11 +140,11 @@ export class QueryBuilderComponent
   public onTouchedCallback: () => any;
 
   @Input() ruleSetIndex: number;
-  @Input() allowRuleset: boolean = true;
-  @Input() allowCollapse: boolean = false;
+  @Input() allowRuleset = true;
+  @Input() allowCollapse = false;
   @Input() sources: string[];
-  @Input() emptyMessage: string =
-    "A Sub-Query cannot be empty. Please add a condition or remove it all together.";
+  @Input() emptyMessage =
+    'A Sub-Query cannot be empty. Please add a condition or remove it all together.';
   @Input() classNames: QueryBuilderClassNames;
   @Input() operatorMap: { [key: string]: string[] };
   @Input() parentValue: RuleSet;
@@ -160,11 +160,11 @@ export class QueryBuilderComponent
   @Input() parentEmptyWarningTemplate: QueryEmptyWarningDirective;
   @Input() parentChangeCallback: () => void;
   @Input() parentTouchedCallback: () => void;
-  @Input() persistValueOnFieldChange: boolean = false;
+  @Input() persistValueOnFieldChange = false;
 
   @Output() dataOnChange = new EventEmitter();
 
-  @ViewChild("treeContainer", { static: true }) treeContainer: ElementRef;
+  @ViewChild('treeContainer', { static: true }) treeContainer: ElementRef;
 
   @ContentChild(QueryButtonGroupDirective, { static: false })
   buttonGroupTemplate: QueryButtonGroupDirective;
@@ -187,22 +187,22 @@ export class QueryBuilderComponent
   arrowIconTemplate: QueryArrowIconDirective;
 
   private defaultTemplateTypes: string[] = [
-    "string",
-    "numeric",
-    "time",
-    "date",
-    "category",
-    "boolean",
-    "multiselect",
-    "numberRange",
-    "rangeDate"
+    'string',
+    'numeric',
+    'time',
+    'date',
+    'category',
+    'boolean',
+    'multiselect',
+    'numberRange',
+    'rangeDate'
   ];
   private defaultPersistValueTypes: string[] = [
-    "string",
-    "numeric",
-    "time",
-    "date",
-    "boolean"
+    'string',
+    'numeric',
+    'time',
+    'date',
+    'boolean'
   ];
   private defaultEmptyList: any[] = [];
   private operatorsCache: { [key: string]: string[] };
@@ -228,21 +228,12 @@ export class QueryBuilderComponent
   ngOnChanges(changes: SimpleChanges) {
     const config = this.config;
     const type = typeof config;
-    if (type === "object") {
+    if (type === 'object') {
       this.fields = Object.keys(config.fields).map(value => {
         const field = config.fields[value];
         field.value = field.value || value;
         return field;
       });
-      if (config.entities) {
-        this.entities = Object.keys(config.entities).map(value => {
-          const entity = config.entities[value];
-          entity.value = entity.value || value;
-          return entity;
-        });
-      } else {
-        this.entities = null;
-      }
       this.operatorsCache = {};
     } else {
       throw new Error(
@@ -262,7 +253,7 @@ export class QueryBuilderComponent
       !this.config.allowEmptyRulesets &&
       this.checkEmptyRuleInRuleset(this.data)
     ) {
-      errors.empty = "Empty rulesets are not allowed.";
+      errors.empty = 'Empty rulesets are not allowed.';
       hasErrors = true;
     }
 
@@ -281,10 +272,9 @@ export class QueryBuilderComponent
   get value(): RuleSet {
     return this.data;
   }
-
-  set value(value: RuleSet) {
+  set value(val: RuleSet) {
     // When component is initialized without a formControl, null is passed to value
-    this.data = value || { source: '', condition: "must", rules: [], isRoot: true, counted: 0 };
+    this.data = val || { index: 0, source: '', condition: 'and', rules: [], isRoot: true, counted: 0 };
     this.handleDataChange();
   }
 
@@ -306,7 +296,7 @@ export class QueryBuilderComponent
 
   getDisabledState = (): boolean => {
     return this.disabled;
-  };
+  }
 
   findTemplateForRule(rule: Rule): TemplateRef<any> {
     const type = this.getInputType(rule.field, rule.operator);
@@ -352,7 +342,7 @@ export class QueryBuilderComponent
         );
       }
       if (fieldObject.nullable) {
-        operators = operators.concat(["is null", "is not null"]);
+        operators = operators.concat(['is null', 'is not null']);
       }
     } else {
       console.warn(`No 'type' property found on field: '${field}'`);
@@ -363,25 +353,13 @@ export class QueryBuilderComponent
     return operators;
   }
 
-  getFields(entity: string): Field[] {
+  getFields(): Field[] {
     let search = this.propertyFilterCtrl.value;
-
     if (!search) {
-      let fs;
-
-      if (this.entities && entity) {
-        fs = this.fields.filter(field => {
-          return field && field.entity === entity;
-        });
-      } else {
-        fs = this.fields;
-      }
-
-      return fs.filter(field => this.data.source === field.source);
+      return this.fields.filter(field => this.data.source === field.source);
     } else {
       search = search.toLowerCase();
     }
-
     // filter the banks
     return this.fields.filter(field => this.data.source === field.source && field.name.toLowerCase().indexOf(search) > -1);
   }
@@ -392,20 +370,20 @@ export class QueryBuilderComponent
     }
 
     if (!this.config.fields[field]) {
-      throw new Error(
-        `No configuration for field '${field}' could be found! Please add it to config.fields.`
-      );
+      throw new Error(`No configuration for field '${field}' could be found! Please add it to config.fields.`);
     }
 
     const type = this.config.fields[field].type;
-    const allowedTypeRange = ['date', 'numeric'];
-
-    const rangeOperators = ['range', 'gt', 'lt', 'gte', 'lte', 'in_range_of_days'];
-    if (allowedTypeRange.indexOf(type) !== -1 && rangeOperators.includes(operator)) {
-      return "numberRange";
+    switch (operator) {
+      case 'is null':
+      case 'is not null':
+        return null;  // No displayed component
+      case 'in':
+      case 'not in':
+        return type === 'category' || type === 'boolean' ? 'multiselect' : type;
+      default:
+        return type;
     }
-
-    return type;
   }
 
   getOptions(field: string): Option[] {
@@ -422,28 +400,7 @@ export class QueryBuilderComponent
     const classNames = args
       .map(id => clsLookup[id] || this.defaultClassNames[id])
       .filter(c => !!c);
-    return classNames.length ? classNames.join(" ") : null;
-  }
-
-  getDefaultField(entity: Entity): Field {
-    if (!entity) {
-      return null;
-    } else if (entity.defaultField !== undefined) {
-      return this.getDefaultValue(entity.defaultField);
-    } else {
-      const entityFields = this.fields.filter(field => {
-        return field && field.entity === entity.value;
-      });
-      if (entityFields && entityFields.length) {
-        return entityFields[0];
-      } else {
-        console.warn(
-          `No fields found for entity '${entity.name}'. ` +
-          `A 'defaultOperator' is also not specified on the field config. Operator value will default to null.`
-        );
-        return null;
-      }
-    }
+    return classNames.length ? classNames.join(' ') : null;
   }
 
   getDefaultOperator(field: Field): string {
@@ -476,12 +433,13 @@ export class QueryBuilderComponent
       const fieldsFiltered = this.fields.filter(f => parent.source === f.source);
       // fieldsFiltered is undefined never existed
       const field: Field = fieldsFiltered[0];
+      console.log(field);
       parent.rules = (parent.rules || []).concat([
         {
           field: field.value,
           operator: this.getDefaultOperator(field),
           value: this.getDefaultValue(field.defaultValue),
-          entity: field.entity
+          options: field.options
         }
       ]);
     }
@@ -515,16 +473,16 @@ export class QueryBuilderComponent
     if (this.disabled || !this.sources.length) {
       return;
     }
-    let parent = this.data;
+
+    const parent = this.data;
 
     if (this.config.addRuleSet) {
       this.config.addRuleSet(parent);
     } else {
-      parent.rules = (parent.rules || []).concat([{ index, source: this.sources[0], condition: "must", rules: [], isRoot: true, counted: 0 }]);
-      parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, isLeftDisabled: false, isRightDisabled: false, condition: "must" });
-
+      parent.rules = (parent.rules || []).concat([{ index, source: this.sources[0], condition: 'and', rules: [], isRoot: true, counted: 0 }]);
+      parent.ruleSetMapping = (parent.ruleSetMapping || []).concat({ index, selectedLeft: false, selectedRight: false, isLeftDisabled: false, isRightDisabled: false, condition: 'and' });
       // Add first set
-      const parentJustAdded = <RuleSet>parent.rules[parent.rules.length - 1];
+      const parentJustAdded = parent.rules[parent.rules.length - 1] as RuleSet;
       this.addRule(parentJustAdded);
     }
 
@@ -600,7 +558,6 @@ export class QueryBuilderComponent
 
             this.data.ruleSetMapping[index].selectedLeft = true;
             this.data.ruleSetMapping[index].isRightDisabled = true;
-            console.log('im here');
 
             if (this.data.ruleSetMapping[i].selectedRight === true) {
               this.data.ruleSetMapping[i].isLeftDisabled = true;
@@ -735,7 +692,7 @@ export class QueryBuilderComponent
     const nativeElement: HTMLElement = this.treeContainer.nativeElement;
     if (nativeElement && nativeElement.firstElementChild) {
       nativeElement.style.maxHeight =
-        nativeElement.firstElementChild.clientHeight + 8 + "px";
+        nativeElement.firstElementChild.clientHeight + 8 + 'px';
     }
   }
 
@@ -787,42 +744,11 @@ export class QueryBuilderComponent
   }
 
   coerceValueForOperator(operator: string, value: any, rule: Rule): any {
-    switch (operator) {
-      case 'range': {
-        return {
-          gte: '',
-          lte: ''
-        };
-      }
-      case 'gt': {
-        return {
-          gt: '',
-        };
-      }
-      case 'in_range_of_days':
-      case 'lt': {
-        return {
-          lt: '',
-        };
-      }
-      case 'gte': {
-        return {
-          gte: '',
-        };
-      }
-      case 'lte': {
-        return {
-          lte: '',
-        };
-      }
-      default: {
-        const inputType: string = this.getInputType(rule.field, operator);
-        if (inputType === "multiselect" && !Array.isArray(value)) {
-          return [value];
-        }
-        return value;
-      }
+    const inputType: string = this.getInputType(rule.field, operator);
+    if (inputType === 'multiselect' && !Array.isArray(value)) {
+      return [value];
     }
+    return value;
   }
 
   changeInput(): void {
@@ -866,7 +792,6 @@ export class QueryBuilderComponent
     this.getInputContext(rule);
     this.getFieldContext(rule);
     this.getOperatorContext(rule);
-    this.getEntityContext(rule);
 
     this.handleTouched();
     this.handleDataChange();
@@ -906,36 +831,9 @@ export class QueryBuilderComponent
     return undefined;
   }
 
-  changeEntity(
-    entityValue: string,
-    rule: Rule,
-    index: number,
-    data: RuleSet
-  ): void {
-    if (this.disabled) {
-      return;
-    }
-
-    const entity: Entity = this.entities.find(e => e.value === entityValue);
-    const defaultField: Field = this.getDefaultField(entity);
-    data.rules[index] = {
-      ...rule,
-      field: defaultField.value
-    };
-    if (defaultField) {
-      this.changeField(defaultField.value, {
-        ...rule,
-        field: defaultField.value
-      });
-    } else {
-      this.handleTouched();
-      this.handleDataChange();
-    }
-  }
-
   getDefaultValue(defaultValue: any): any {
     switch (typeof defaultValue) {
-      case "function":
+      case 'function':
         return defaultValue();
       default:
         return defaultValue;
@@ -983,10 +881,10 @@ export class QueryBuilderComponent
   }
 
   getQueryItemClassName(local: LocalRuleMeta): string {
-    let cls = this.getClassNames("row", "connector", "transition");
-    cls += " " + this.getClassNames(local.ruleset ? "ruleSet" : "rule");
+    let cls = this.getClassNames('row', 'connector', 'transition');
+    cls += ' ' + this.getClassNames(local.ruleset ? 'ruleSet' : 'rule');
     if (local.invalid) {
-      cls += " " + this.getClassNames("invalidRuleSet");
+      cls += ' ' + this.getClassNames('invalidRuleSet');
     }
     return cls;
   }
@@ -1032,18 +930,6 @@ export class QueryBuilderComponent
       });
     }
     return this.fieldContextCache.get(rule);
-  }
-
-  getEntityContext(rule: Rule): EntityContext {
-    if (!this.entityContextCache.has(rule)) {
-      this.entityContextCache.set(rule, {
-        onChange: this.changeEntity.bind(this),
-        getDisabledState: this.getDisabledState,
-        entities: this.entities,
-        $implicit: rule
-      });
-    }
-    return this.entityContextCache.get(rule);
   }
 
   getSwitchGroupContext(): SwitchGroupContext {
@@ -1132,7 +1018,7 @@ export class QueryBuilderComponent
   }
 
   private swap(array: any[], x: any, y: any) {
-    var b = array[x];
+    const b = array[x];
     array[x].index = y;
     array[y].index = x;
 
